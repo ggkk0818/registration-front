@@ -56,6 +56,24 @@ export const asyncRouterMap = [
             name: 'UserList',
             component: () => import('@/views/system/user'),
             meta: { title: '用户管理', keepAlive: true, permission: ['table'] }
+          },
+          {
+            path: 'user/add',
+            name: 'UserAdd',
+            component: () => import('@/views/system/user/edit'),
+            meta: { title: '新建用户', keepAlive: true, permission: ['table'] }
+          },
+          {
+            path: 'user/edit/:id',
+            name: 'UserEdit',
+            component: () => import('@/views/system/user/edit'),
+            meta: { title: '编辑用户', hidden: true, keepAlive: true, permission: ['table'] }
+          },
+          {
+            path: 'user/detail/:id',
+            name: 'UserDetail',
+            component: () => import('@/views/system/user/detail'),
+            meta: { title: '查看用户', hidden: true, keepAlive: true, permission: ['table'] }
           }
         ]
       },

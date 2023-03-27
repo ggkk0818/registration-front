@@ -68,5 +68,11 @@ export const AdminRole = {
     permissionName: '系统管理',
     actionEntitySet: [],
     actionList: ['add', 'query', 'get', 'update', 'delete']
+  }, {
+    roleId: 'admin',
+    permissionId: 'user',
+    permissionName: '用户管理',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
   }]
 }
