@@ -43,6 +43,41 @@ export const asyncRouterMap = [
           }
         ]
       },
+      // 科室管理
+      {
+        path: '/depart',
+        name: 'depart',
+        component: RouteView,
+        meta: { title: '科室管理', icon: 'table', permission: ['department'] },
+        children: [
+          {
+            path: '/department',
+            name: 'DepartmentList',
+            component: () => import('@/views/department'),
+            meta: { title: '科室管理', keepAlive: true, permission: ['department'] }
+          },
+          {
+            path: '/department/add',
+            name: 'DepartmentAdd',
+            component: () => import('@/views/department/edit'),
+            meta: { title: '新建科室', keepAlive: true, permission: ['department'] }
+          },
+          {
+            path: '/department/edit/:id',
+            name: 'DepartmentEdit',
+            component: () => import('@/views/department/edit'),
+            meta: { title: '编辑科室', keepAlive: true, permission: ['department'] },
+            hidden: true
+          },
+          {
+            path: '/department/detail/:id',
+            name: 'DepartmentDetail',
+            component: () => import('@/views/department/detail'),
+            meta: { title: '查看科室', keepAlive: true, permission: ['department'] },
+            hidden: true
+          }
+        ]
+      },
       // 系统管理
       {
         path: '/system',
