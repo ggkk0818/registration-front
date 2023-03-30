@@ -97,6 +97,8 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
+            <a @click="handleView(record)">查看</a>
+            <a-divider type="vertical" />
             <a v-if="record.isEnabled" @click="handleEdit(record)">停用</a>
             <a v-else @click="handleEdit(record)">启用</a>
             <a-divider type="vertical" />
@@ -146,7 +148,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '220px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -215,6 +217,9 @@ export default {
     },
     handleEdit (record) {
       this.$router.push({ path: `${this.$route.path}/edit/${record.id}` })
+    },
+    handleView (record) {
+      this.$router.push({ path: `${this.$route.path}/detail/${record.id}` })
     },
     handleDel (record) {
       this.$confirm({
