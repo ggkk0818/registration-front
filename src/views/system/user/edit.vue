@@ -108,7 +108,6 @@ export default {
             this.isLoading = false
           }
         } else {
-          console.log('error submit!!')
           return false
         }
       })

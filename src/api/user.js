@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+const url = 'admin'
 /**
  * 查询用户列表
  * @param {*} params
@@ -6,7 +7,7 @@ import request from '@/utils/request'
  */
 export function getUserList (params) {
   return request({
-    url: 'admin',
+    url: `${url}`,
     method: 'get',
     params: params
   })
@@ -18,7 +19,7 @@ export function getUserList (params) {
  */
 export function getUserDetail (id) {
   return request({
-    url: `admin/${encodeURIComponent(id)}`,
+    url: `${url}/${encodeURIComponent(id)}`,
     method: 'get'
   })
 }
@@ -29,7 +30,7 @@ export function getUserDetail (id) {
  */
 export function addUser (params) {
   return request({
-    url: 'admin',
+    url: `${url}`,
     method: 'post',
     data: params
   })
@@ -41,7 +42,7 @@ export function addUser (params) {
  */
 export function updateUser (params) {
   return request({
-    url: 'admin',
+    url: `${url}`,
     method: 'put',
     data: params
   })
@@ -53,7 +54,7 @@ export function updateUser (params) {
  */
 export function delUser (id) {
   return request({
-    url: `admin/${id}`,
+    url: `${url}/${id}`,
     method: 'delete'
   })
 }
