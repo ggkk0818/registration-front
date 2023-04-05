@@ -18,7 +18,7 @@
             <a-input
               size="large"
               type="text"
-              :placeholder="$t('user.login.username.placeholder')"
+              placeholder="账号"
               v-decorator="[
                 'username',
                 {
@@ -37,7 +37,7 @@
           <a-form-item>
             <a-input-password
               size="large"
-              :placeholder="$t('user.login.password.placeholder')"
+              placeholder="密码"
               v-decorator="[
                 'password',
                 { rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur' },
@@ -47,7 +47,7 @@
             </a-input-password>
           </a-form-item>
         </a-tab-pane>
-        <a-tab-pane key="tab2" :tab="$t('user.login.tab-login-mobile')">
+        <!-- <a-tab-pane key="tab2" :tab="$t('user.login.tab-login-mobile')">
           <a-form-item>
             <a-input
               size="large"
@@ -94,17 +94,17 @@
               ></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>
+        </a-tab-pane> -->
       </a-tabs>
 
-      <a-form-item>
+      <!-- <a-form-item>
         <a-checkbox v-decorator="['rememberMe', { valuePropName: 'checked' }]">{{
           $t('user.login.remember-me')
         }}</a-checkbox>
         <router-link :to="{ name: 'recover', params: { user: 'aaa' } }" class="forge-password" style="float: right">{{
           $t('user.login.forgot-password')
         }}</router-link>
-      </a-form-item>
+      </a-form-item> -->
 
       <a-form-item style="margin-top: 24px">
         <a-button
@@ -119,7 +119,7 @@
       </a-form-item>
 
       <div class="user-login-other">
-        <span>{{ $t('user.login.sign-in-with') }}</span>
+        <!-- <span>{{ $t('user.login.sign-in-with') }}</span>
         <a>
           <a-icon class="item-icon" type="alipay-circle"></a-icon>
         </a>
@@ -128,7 +128,7 @@
         </a>
         <a>
           <a-icon class="item-icon" type="weibo-circle"></a-icon>
-        </a>
+        </a> -->
         <router-link class="register" :to="{ name: 'register' }">{{ $t('user.login.signup') }}</router-link>
       </div>
     </a-form>
