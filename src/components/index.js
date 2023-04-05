@@ -1,5 +1,6 @@
 // chart
 import Bar from '@/components/Charts/Bar'
+import ChartLine from '@/components/Charts/ChartLine'
 import ChartCard from '@/components/Charts/ChartCard'
 import Liquid from '@/components/Charts/Liquid'
 import MiniArea from '@/components/Charts/MiniArea'
@@ -30,6 +31,7 @@ import Dialog from '@/components/Dialog'
 export {
   AvatarList,
   Bar,
+  ChartLine,
   ChartCard,
   Liquid,
   MiniArea,

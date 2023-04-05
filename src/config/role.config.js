@@ -64,8 +64,38 @@ export const AdminRole = {
     actionList: ['add', 'query', 'get', 'update', 'delete']
   }, {
     roleId: 'admin',
+    permissionId: 'appointment',
+    permissionName: '预约管理',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }, {
+    roleId: 'admin',
     permissionId: 'department',
     permissionName: '科室管理',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }, {
+    roleId: 'admin',
+    permissionId: 'doctor',
+    permissionName: '医生管理',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }, {
+    roleId: 'admin',
+    permissionId: 'patient',
+    permissionName: '患者管理',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }, {
+    roleId: 'admin',
+    permissionId: 'announcement',
+    permissionName: '公告管理',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }, {
+    roleId: 'admin',
+    permissionId: 'statistic',
+    permissionName: '报表统计',
     actionEntitySet: [],
     actionList: ['add', 'query', 'get', 'update', 'delete']
   }, {
