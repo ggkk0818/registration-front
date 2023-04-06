@@ -131,6 +131,10 @@ const columns = [
     dataIndex: 'realName'
   },
   {
+    title: '所属科室',
+    dataIndex: 'deptName'
+  },
+  {
     title: '手机号',
     dataIndex: 'mobile'
   },
