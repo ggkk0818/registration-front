@@ -91,7 +91,9 @@
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
-
+        <span slot="updateTime" slot-scope="text">
+          {{ text | moment }}
+        </span>
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleView(record)">查看</a>
@@ -128,7 +130,8 @@ const columns = [
   {
     title: '更新时间',
     dataIndex: 'updateTime',
-    width: '220px'
+    width: '220px',
+    scopedSlots: { customRender: 'updateTime' }
   },
   {
     title: '操作',
