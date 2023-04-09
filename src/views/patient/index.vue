@@ -117,7 +117,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getDoctorList, delDoctor } from '@/api/doctor'
+import { getPatientList, delPatient } from '@/api/patient'
 
 const columns = [
   {
@@ -129,17 +129,12 @@ const columns = [
     dataIndex: 'name'
   },
   {
-    title: '医生姓名',
+    title: '患者姓名',
     dataIndex: 'realName'
   },
   {
     title: '手机号',
     dataIndex: 'mobile'
-  },
-  {
-    title: '描述',
-    dataIndex: 'description',
-    scopedSlots: { customRender: 'description' }
   },
   {
     title: '状态',
@@ -175,7 +170,7 @@ const statusMap = {
 }
 
 export default {
-  name: 'UserList',
+  name: 'PatientList',
   components: {
     STable,
     Ellipsis
@@ -195,7 +190,7 @@ export default {
       loadData: (parameter) => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getDoctorList(requestParameters)
+        return getPatientList(requestParameters)
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -232,7 +227,7 @@ export default {
         title: '提示',
         content: '是否确认删除？',
         onOk: () => {
-          delDoctor(record.id).then(() => {
+          delPatient(record.id).then(() => {
             this.$message.success('操作成功')
             this.$refs.table.refresh()
           })
