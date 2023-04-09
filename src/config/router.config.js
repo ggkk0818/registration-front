@@ -75,6 +75,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/appointment/detail'),
             meta: { title: '查看预约', keepAlive: true, permission: ['appointment'] },
             hidden: true
+          },
+          {
+            path: '/appointment/result/:id',
+            name: 'AppointmentResult',
+            component: () => import('@/views/appointment/result'),
+            meta: { title: '预约结果', keepAlive: true, permission: ['appointment'] },
+            hidden: true
           }
         ]
       },
