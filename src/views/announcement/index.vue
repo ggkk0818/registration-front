@@ -88,11 +88,11 @@
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
+        <span slot="type" slot-scope="">
+          系统公告
+        </span>
         <span slot="isEnabled" slot-scope="text">
           <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-        </span>
-        <span slot="remark" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
         <span slot="updateTime" slot-scope="text">
           {{ text | moment }}
@@ -117,7 +117,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getDoctorList, delDoctor } from '@/api/doctor'
+import { getAnnouncementList, delAnnouncement } from '@/api/announcement'
 
 const columns = [
   {
@@ -125,21 +125,17 @@ const columns = [
     scopedSlots: { customRender: 'serial' }
   },
   {
-    title: '用户名',
-    dataIndex: 'name'
+    title: '公告标题',
+    dataIndex: 'title'
   },
   {
-    title: '医生姓名',
-    dataIndex: 'realName'
+    title: '公告内容',
+    dataIndex: 'content'
   },
   {
-    title: '手机号',
-    dataIndex: 'mobile'
-  },
-  {
-    title: '描述',
-    dataIndex: 'description',
-    scopedSlots: { customRender: 'description' }
+    title: '类型',
+    dataIndex: 'type',
+    scopedSlots: { customRender: 'type' }
   },
   {
     title: '状态',
@@ -195,7 +191,7 @@ export default {
       loadData: (parameter) => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getDoctorList(requestParameters)
+        return getAnnouncementList(requestParameters)
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -232,7 +228,7 @@ export default {
         title: '提示',
         content: '是否确认删除？',
         onOk: () => {
-          delDoctor(record.id).then(() => {
+          delAnnouncement(record.id).then(() => {
             this.$message.success('操作成功')
             this.$refs.table.refresh()
           })
