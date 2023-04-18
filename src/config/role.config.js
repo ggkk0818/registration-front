@@ -112,3 +112,10 @@ export const AdminRole = {
     actionList: ['add', 'query', 'get', 'update', 'delete']
   }]
 }
+
+export const UserRole = {
+  id: 'user',
+  name: '普通用户',
+  describe: '',
+  permissions: []
+}

@@ -5,14 +5,15 @@ import NProgress from 'nprogress' // progress bar
 import '@/components/NProgress/nprogress.less' // progress bar custom style
 import notification from 'ant-design-vue/es/notification'
 import { setDocumentTitle, domTitle } from '@/utils/domUtil'
+import { getFirstPath } from '@/utils/util'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { i18nRender } from '@/locales'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const allowList = ['login', 'register', 'registerResult'] // no redirect allowList
+const allowList = ['login', 'register', 'registerResult', 'patientDashboard'] // no redirect allowList
 const loginRoutePath = '/user/login'
-const defaultRoutePath = '/dashboard/workplace'
+const defaultRoutePath = '/'
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
@@ -39,7 +40,15 @@ router.beforeEach((to, from, next) => {
                 router.addRoute(r)
               })
               // 请求带有 redirect 重定向时，登录自动重定向到该地址
-              const redirect = decodeURIComponent(from.query.redirect || to.path)
+              let redirect = from.query.redirect ? decodeURIComponent(from.query.redirect) : null
+              const firstMenu = store.getters.firstMenu
+              console.log('firstMenu', firstMenu)
+              // 访问首页时跳转第一个路由菜单地址
+              if (to.path === defaultRoutePath && !redirect) {
+                redirect = getFirstPath(firstMenu)
+              } else if (!redirect) {
+                redirect = to.path
+              }
               if (to.path === redirect) {
                 // set the replace: true so the navigation will not leave a history record
                 next({ ...to, replace: true })

@@ -2,7 +2,7 @@ import storage from 'store'
 import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
-import { AdminRole } from '@/config/role.config'
+import { AdminRole, UserRole } from '@/config/role.config'
 import { cloneDeep } from 'lodash'
 
 const user = {
@@ -65,10 +65,14 @@ const user = {
             })
             role.permissionList = role.permissions.map(permission => { return permission.permissionId })
             result.role = role
-            commit('SET_ROLES', result.role)
+            commit('SET_ROLES', [result.role])
             commit('SET_INFO', result)
           } else {
-            reject(new Error('getInfo: roles must be a non-null array !'))
+            const role = cloneDeep(UserRole)
+            role.permissionList = []
+            result.role = role
+            commit('SET_ROLES', [result.role])
+            commit('SET_INFO', result)
           }
 
           commit('SET_NAME', { name: result.name, welcome: welcome() })

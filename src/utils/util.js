@@ -93,3 +93,17 @@ export function scorePassword (pass) {
 
   return parseInt(score)
 }
+/**
+ * 获取路由默认路径
+ * @param {*} router
+ * @returns
+ */
+export function getFirstPath (router) {
+  if (router && router.redirect) {
+    return router.redirect
+  } else if (router.children && router.children.length) {
+    return getFirstPath(router.children[0])
+  } else {
+    return router && router.path || '/'
+  }
+}
