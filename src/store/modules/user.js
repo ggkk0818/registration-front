@@ -55,29 +55,19 @@ const user = {
         getInfo().then(data => {
           console.log('getInfo', data)
           const result = data || {}
-          if (result.roleId === AdminRole.id) {
-            const role = cloneDeep(AdminRole)
-            role.permissions.map(per => {
-              if (per.actionEntitySet != null && per.actionEntitySet.length > 0) {
-                const action = per.actionEntitySet.map(action => { return action.action })
-                per.actionList = action
-              }
-            })
-            role.permissionList = role.permissions.map(permission => { return permission.permissionId })
-            result.role = role
-            commit('SET_ROLES', [result.role])
-            commit('SET_INFO', result)
-          } else {
-            const role = cloneDeep(UserRole)
-            role.permissionList = []
-            result.role = role
-            commit('SET_ROLES', [result.role])
-            commit('SET_INFO', result)
-          }
-
+          const role = cloneDeep(result.roleId === AdminRole.id ? AdminRole : UserRole)
+          role.permissions.map(per => {
+            if (per.actionEntitySet != null && per.actionEntitySet.length > 0) {
+              const action = per.actionEntitySet.map(action => { return action.action })
+              per.actionList = action
+            }
+          })
+          role.permissionList = role.permissions.map(permission => { return permission.permissionId })
+          result.role = role
+          commit('SET_ROLES', [result.role])
+          commit('SET_INFO', result)
           commit('SET_NAME', { name: result.name, welcome: welcome() })
           commit('SET_AVATAR', result.avatar)
-
           resolve(data)
         }).catch(error => {
           reject(error)

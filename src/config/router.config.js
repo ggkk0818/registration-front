@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
+import { UserLayout, BasicLayout, PatientLayout, BlankLayout } from '@/layouts'
 import { bxAnaalyse } from '@/core/icons'
 
 const RouteView = {
@@ -12,7 +12,7 @@ export const asyncRouterMap = [
     path: '/',
     name: 'index',
     component: BasicLayout,
-    meta: { title: 'menu.home' },
+    meta: { title: 'menu.home', permission: ['dashboard'] },
     children: [
       // dashboard
       {
@@ -588,6 +588,28 @@ export const asyncRouterMap = [
       }
       */
     ]
+  },
+  {
+    path: '/',
+    name: 'patientAppointment',
+    component: PatientLayout,
+    meta: { title: '预约', permission: ['patientAppointment'] },
+    children: [{
+      path: '/dashboard',
+      name: 'patientDashboard',
+      component: () => import('@/views/dashboard/Patient'),
+      meta: { title: '首页', keepAlive: false }
+    }, {
+      path: '/patient-appointment/doctor',
+      name: 'patientAppointmentDoctor',
+      component: () => import('@/views/patient-appointment/doctor'),
+      meta: { title: '预约挂号', keepAlive: true, permission: ['patientAppointment'] }
+    }, {
+      path: '/patient-appointment/list',
+      name: 'patientAppointmentList',
+      component: () => import('@/views/patient-appointment/list'),
+      meta: { title: '我的预约', keepAlive: true, permission: ['patientAppointment'] }
+    }]
   },
   {
     path: '*',

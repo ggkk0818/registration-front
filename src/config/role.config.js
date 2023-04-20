@@ -117,5 +117,11 @@ export const UserRole = {
   id: 'user',
   name: '普通用户',
   describe: '',
-  permissions: []
+  permissions: [{
+    roleId: 'user',
+    permissionId: 'patientAppointment',
+    permissionName: '预约',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }]
 }
