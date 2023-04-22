@@ -151,6 +151,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/doctor/detail'),
             meta: { title: '查看医生', keepAlive: true, permission: ['doctor'] },
             hidden: true
+          },
+          {
+            path: '/doctor/schedule/:id',
+            name: 'DoctorSchedule',
+            component: () => import('@/views/doctor/schedule'),
+            meta: { title: '医生排班', keepAlive: true, permission: ['doctor'] },
+            hidden: true
           }
         ]
       },

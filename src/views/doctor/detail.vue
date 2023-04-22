@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-descriptions title="用户信息">
+      <a-descriptions title="医生信息">
         <a-descriptions-item label="用户名">{{ detailData && detailData.name }}</a-descriptions-item>
         <a-descriptions-item label="姓名">{{ detailData && detailData.realName }}</a-descriptions-item>
         <a-descriptions-item label="年龄">{{ detailData && detailData.age }}</a-descriptions-item>

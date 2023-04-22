@@ -58,3 +58,15 @@ export function delDoctor (id) {
     method: 'delete'
   })
 }
+/**
+ * 更新排班
+ * @param {*} params
+ * @returns
+ */
+export function updateSchedule (params) {
+  return request({
+    url: `${url}/schedule`,
+    method: 'put',
+    data: params
+  })
+}

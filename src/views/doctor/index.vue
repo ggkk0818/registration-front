@@ -101,6 +101,8 @@
           <template>
             <a @click="handleView(record)">查看</a>
             <a-divider type="vertical" />
+            <a @click="handleSchedule(record)">排班</a>
+            <a-divider type="vertical" />
             <a v-if="record.isEnabled" @click="handleEdit(record)">停用</a>
             <a v-else @click="handleEdit(record)">启用</a>
             <a-divider type="vertical" />
@@ -158,7 +160,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '220px',
+    width: '260px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -230,6 +232,9 @@ export default {
     },
     handleView (record) {
       this.$router.push({ path: `${this.$route.path}/detail/${record.id}` })
+    },
+    handleSchedule (record) {
+      this.$router.push({ path: `${this.$route.path}/schedule/${record.id}` })
     },
     handleDel (record) {
       this.$confirm({
