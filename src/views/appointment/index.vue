@@ -66,6 +66,7 @@
 
       <div class="table-operator">
         <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button type="success" icon="plus" :loading="confirmLoading" @click="handleGenerate">一键放号</a-button>
         <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
@@ -117,7 +118,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getDoctorList, delDoctor } from '@/api/doctor'
+import { getAppointmentList, delAppointment, createResource } from '@/api/appointment'
 
 const columns = [
   {
@@ -175,7 +176,7 @@ const statusMap = {
 }
 
 export default {
-  name: 'UserList',
+  name: 'AppointmentList',
   components: {
     STable,
     Ellipsis
@@ -195,7 +196,7 @@ export default {
       loadData: (parameter) => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getDoctorList(requestParameters)
+        return getAppointmentList(requestParameters)
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -232,9 +233,24 @@ export default {
         title: '提示',
         content: '是否确认删除？',
         onOk: () => {
-          delDoctor(record.id).then(() => {
+          delAppointment(record.id).then(() => {
             this.$message.success('操作成功')
             this.$refs.table.refresh()
+          })
+        }
+      })
+    },
+    handleGenerate () {
+      this.$confirm({
+        title: '提示',
+        content: '确定重新生成当天号源？',
+        onOk: () => {
+          this.confirmLoading = true
+          createResource().then(() => {
+            this.$message.success('操作成功')
+            this.$refs.table.refresh()
+          }).finally(() => {
+            this.confirmLoading = false
           })
         }
       })

@@ -48,7 +48,7 @@ const DEFAULT_VALUES = {
   remark: ''
 }
 export default {
-  name: 'UserEdit',
+  name: 'AppointmentEdit',
   data () {
     return {
       isLoading: false,
