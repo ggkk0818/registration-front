@@ -9,14 +9,6 @@
                 <a-input v-model="queryParam.name" placeholder="" />
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="状态">
-                <a-select v-model="queryParam.isEnabled" placeholder="请选择">
-                  <a-select-option value="0">禁用</a-select-option>
-                  <a-select-option value="1">启用</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="调用次数">
@@ -64,18 +56,6 @@
         </a-form>
       </div>
 
-      <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-        <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-            <!-- lock | unlock -->
-            <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
-        </a-dropdown>
-      </div>
-
       <s-table
         ref="table"
         size="default"
@@ -88,25 +68,15 @@
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
-        <span slot="isEnabled" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
+        <span slot="description" slot-scope="text">
+          <ellipsis :length="12" tooltip>{{ text }}</ellipsis>
         </span>
-        <span slot="remark" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-        <span slot="updateTime" slot-scope="text">
-          {{ text | moment }}
+        <span slot="diagnoseDate" slot-scope="text">
+          {{ text | moment('YYYY-MM-DD') }}
         </span>
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleView(record)">查看</a>
-            <a-divider type="vertical" />
-            <a v-if="record.isEnabled" @click="handleEdit(record)">停用</a>
-            <a v-else @click="handleEdit(record)">启用</a>
-            <a-divider type="vertical" />
-            <a @click="handleEdit(record)">编辑</a>
-            <a-divider type="vertical" />
-            <a @click="handleDel(record)">删除</a>
+            <a @click="handleView(record)">预约</a>
           </template>
         </span>
       </s-table>
@@ -117,7 +87,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getDoctorList, delDoctor } from '@/api/doctor'
+import { getDoctorResourceList } from '@/api/doctor'
 
 const columns = [
   {
@@ -125,16 +95,8 @@ const columns = [
     scopedSlots: { customRender: 'serial' }
   },
   {
-    title: '用户名',
-    dataIndex: 'name'
-  },
-  {
     title: '医生姓名',
     dataIndex: 'realName'
-  },
-  {
-    title: '手机号',
-    dataIndex: 'mobile'
   },
   {
     title: '描述',
@@ -142,14 +104,13 @@ const columns = [
     scopedSlots: { customRender: 'description' }
   },
   {
-    title: '状态',
-    dataIndex: 'isEnabled',
-    scopedSlots: { customRender: 'isEnabled' }
+    title: '剩余号源',
+    dataIndex: 'resourceCount'
   },
   {
-    title: '更新时间',
-    dataIndex: 'updateTime',
-    scopedSlots: { customRender: 'updateTime' }
+    title: '日期',
+    dataIndex: 'diagnoseDate',
+    scopedSlots: { customRender: 'diagnoseDate' }
   },
   {
     title: '操作',
@@ -159,23 +120,8 @@ const columns = [
   }
 ]
 
-const statusMap = {
-  0: {
-    status: 'default',
-    text: '停用'
-  },
-  1: {
-    status: 'success',
-    text: '启用'
-  },
-  2: {
-    status: 'error',
-    text: '异常'
-  }
-}
-
 export default {
-  name: 'UserList',
+  name: 'DoctorResourceList',
   components: {
     STable,
     Ellipsis
@@ -195,18 +141,10 @@ export default {
       loadData: (parameter) => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getDoctorList(requestParameters)
+        return getDoctorResourceList(requestParameters)
       },
       selectedRowKeys: [],
       selectedRows: []
-    }
-  },
-  filters: {
-    statusFilter (type) {
-      return statusMap[type].text
-    },
-    statusTypeFilter (type) {
-      return statusMap[type].status
     }
   },
   computed: {
@@ -218,26 +156,8 @@ export default {
     }
   },
   methods: {
-    handleAdd () {
-      this.$router.push({ path: `${this.$route.path}/add` })
-    },
-    handleEdit (record) {
-      this.$router.push({ path: `${this.$route.path}/edit/${record.id}` })
-    },
     handleView (record) {
       this.$router.push({ path: `${this.$route.path}/detail/${record.id}` })
-    },
-    handleDel (record) {
-      this.$confirm({
-        title: '提示',
-        content: '是否确认删除？',
-        onOk: () => {
-          delDoctor(record.id).then(() => {
-            this.$message.success('操作成功')
-            this.$refs.table.refresh()
-          })
-        }
-      })
     },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

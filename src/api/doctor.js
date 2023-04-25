@@ -70,3 +70,15 @@ export function updateSchedule (params) {
     data: params
   })
 }
+/**
+ * 查询医生号源列表
+ * @param {*} params
+ * @returns
+ */
+export function getDoctorResourceList (params) {
+  return request({
+    url: `${url}/resource`,
+    method: 'get',
+    params: params
+  })
+}
