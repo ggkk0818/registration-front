@@ -157,7 +157,7 @@ export default {
   },
   methods: {
     handleView (record) {
-      this.$router.push({ path: `${this.$route.path}/detail/${record.id}` })
+      this.$router.push({ path: `${this.$route.path}/deal/${record.id}` })
     },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

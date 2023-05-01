@@ -4,41 +4,67 @@
     <template v-if="currentStep === APPOINTMENT_STEP.TIME">
       <a-card :bordered="false">
         <a-descriptions title="医生信息">
-          <a-descriptions-item label="用户名">{{ doctorData && doctorData.name }}</a-descriptions-item>
+          <a-descriptions-item label="科室">{{ doctorData && doctorData.deptName }}</a-descriptions-item>
           <a-descriptions-item label="姓名">{{ doctorData && doctorData.realName }}</a-descriptions-item>
           <a-descriptions-item label="年龄">{{ doctorData && doctorData.age }}</a-descriptions-item>
           <a-descriptions-item label="性别">{{ doctorData && doctorData.gender }}</a-descriptions-item>
           <a-descriptions-item label="描述"> {{ doctorData && doctorData.description }}</a-descriptions-item>
         </a-descriptions>
       </a-card>
-      <a-card :bordered="false">
+      <a-card :bordered="false" style="margin-top: 20px">
+        <a-descriptions title="预约时段"></a-descriptions>
         <s-table
           ref="table"
           size="default"
           rowKey="id"
           :columns="columns"
           :data="loadData"
-          :showPagination="false"
-        >
+          :showPagination="false">
           <span slot="serial" slot-scope="text, record, index">
             {{ index + 1 }}
           </span>
           <span slot="startTime" slot-scope="text">
-            {{ text | moment('MM-DD HH:mm') }}
+            {{ text | moment('HH:mm') }}
           </span>
           <span slot="endTime" slot-scope="text">
-            {{ text | moment('MM-DD HH:mm') }}
+            {{ text | moment('HH:mm') }}
+          </span>
+          <span slot="resourceCount" slot-scope="text">
+            {{ text > 0 ? text : '暂无' }}
           </span>
           <span slot="action" slot-scope="text, record">
             <template>
-              <a @click="handleView(record)">预约</a>
+              <a-button
+                type="primary"
+                :disabled="record.resourceCount < 1"
+                @click="lockResource(record)"
+              >预约</a-button
+              >
             </template>
           </span>
         </s-table>
       </a-card>
     </template>
     <template v-else-if="currentStep === APPOINTMENT_STEP.CONFIRM">
-
+      <a-card :bordered="false">
+        <a-descriptions title="医生信息">
+          <a-descriptions-item label="科室">{{ doctorData && doctorData.deptName }}</a-descriptions-item>
+          <a-descriptions-item label="姓名">{{ doctorData && doctorData.realName }}</a-descriptions-item>
+          <a-descriptions-item label="年龄">{{ doctorData && doctorData.age }}</a-descriptions-item>
+          <a-descriptions-item label="性别">{{ doctorData && doctorData.gender }}</a-descriptions-item>
+          <a-descriptions-item label="描述"> {{ doctorData && doctorData.description }}</a-descriptions-item>
+        </a-descriptions>
+        <a-descriptions title="预约信息">
+          <a-descriptions-item label="患者姓名">{{ userInfo && userInfo.realName || '' }}</a-descriptions-item>
+          <a-descriptions-item label="就诊时间">{{
+            (appointmentData && appointmentData.diagnoseTime) | moment
+          }}</a-descriptions-item>
+        </a-descriptions>
+      </a-card>
+      <div class="btns">
+        <a-button type="primary" :loading="isLoading" @click="deal">确认预约</a-button>
+        <a-button style="margin-left: 8px" :disabled="isLoading" @click="prev">返回</a-button>
+      </div>
     </template>
     <template v-else-if="currentStep === APPOINTMENT_STEP.RESULT">
       <a-card :bordered="false">
@@ -46,20 +72,29 @@
           <a-icon type="check-circle" theme="twoTone" two-tone-color="#52c41a" />
           <p class="msg">预约成功</p>
         </div>
-        <a-divider style="margin: 32px 0"/>
+        <a-divider style="margin: 32px 0" />
         <a-descriptions title="预约信息">
-          <a-descriptions-item label="患者姓名">张三</a-descriptions-item>
-          <a-descriptions-item label="就诊时间">2023-04-23 08:00:00</a-descriptions-item>
-          <a-descriptions-item label="医生姓名">陈医生</a-descriptions-item>
-          <a-descriptions-item label="科室">外科</a-descriptions-item>
+          <a-descriptions-item label="患者姓名">{{ userInfo && userInfo.realName || '' }}</a-descriptions-item>
+          <a-descriptions-item label="就诊时间">{{
+            (appointmentData && appointmentData.diagnoseTime) | moment
+          }}</a-descriptions-item>
+          <a-descriptions-item label="医生姓名">{{ doctorData && doctorData.realName }}</a-descriptions-item>
+          <a-descriptions-item label="科室">{{ doctorData && doctorData.deptName }}</a-descriptions-item>
         </a-descriptions>
       </a-card>
+      <div class="btns">
+        <a-button type="primary" :loading="isLoading" @click="goMy">我的预约</a-button>
+        <a-button style="margin-left: 8px" :disabled="isLoading" @click="back">返回</a-button>
+      </div>
     </template>
   </page-header-wrapper>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { getDoctorResourceList } from '@/api/doctor'
+import { prepare, deal } from '@/api/appointment'
+import { STable, Ellipsis } from '@/components'
 // 预约步骤
 const APPOINTMENT_STEP = {
   TIME: 1, // 选择时间
@@ -82,6 +117,11 @@ const columns = [
     scopedSlots: { customRender: 'endTime' }
   },
   {
+    title: '号源数量',
+    dataIndex: 'resourceCount',
+    scopedSlots: { customRender: 'resourceCount' }
+  },
+  {
     title: '操作',
     dataIndex: 'action',
     width: '220px',
@@ -89,20 +129,27 @@ const columns = [
   }
 ]
 export default {
+  components: {
+    STable,
+    Ellipsis
+  },
   data () {
     return {
       APPOINTMENT_STEP,
       columns,
       isLoading: false,
       doctorData: null,
-      scheduleList: [],
+      resourceList: [],
       appointmentData: null,
       // 加载数据方法 必须为 Promise 对象
       loadData: () => {
-        return Promise.resolve({ records: this.scheduleList })
+        return Promise.resolve({ records: this.resourceList })
       },
-      currentStep: APPOINTMENT_STEP.DOCTOR
+      currentStep: APPOINTMENT_STEP.TIME
     }
+  },
+  computed: {
+    ...mapGetters(['userInfo'])
   },
   watch: {
     $route: {
@@ -119,16 +166,57 @@ export default {
         if (this.$route.params.doctor) {
           this.doctorData = this.$route.params.doctor
         } else {
-          const res = await getDoctorResourceList({ query: { id: this.$route.params.id } })
+          const res = await getDoctorResourceList({ id: this.$route.params.id })
           this.doctorData = res?.records?.[0]
         }
-        this.scheduleList = this.doctorData?.scheduleList || []
+        this.resourceList = this.doctorData?.resourceList || []
+        if (this.$refs.table) {
+          this.$refs.table.refresh()
+        }
       } finally {
         this.isLoading = false
       }
     },
+    // 锁定号源
+    async lockResource (item) {
+      const hide = this.$message.loading('正在查询号源..', 0)
+      try {
+        const params = { ...item }
+        const data = await prepare(params)
+        if (data) {
+          this.appointmentData = data
+          this.currentStep++
+        } else {
+          this.$message.error('服务器开小差了，稍后再试吧')
+        }
+      } finally {
+        hide()
+      }
+    },
+    // 预约挂号
+    async deal () {
+      const hide = this.$message.loading('正在预约..', 0)
+      try {
+        const params = { ...this.appointmentData }
+        await deal(params)
+        this.currentStep++
+      } finally {
+        hide()
+      }
+    },
+    // 上一步
+    prev () {
+      if (this.currentStep > 1) {
+        this.currentStep--
+      }
+    },
+    // 返回
     back () {
       this.$router.back()
+    },
+    // 进入我的预约
+    goMy () {
+      this.$router.replace('/patient-appointment/list')
     }
   }
 }
@@ -154,5 +242,10 @@ export default {
     text-align: center;
     font-size: 22px;
   }
+}
+.btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 </style>

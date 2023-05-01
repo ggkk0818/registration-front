@@ -68,3 +68,27 @@ export function createResource () {
     method: 'post'
   })
 }
+/**
+ * 预约前锁定号源
+ * @param {*} params
+ * @returns
+ */
+export function prepare (params) {
+  return request({
+    url: `${url}/prepare`,
+    method: 'post',
+    data: params
+  })
+}
+/**
+ * 预约号源
+ * @param {*} params
+ * @returns
+ */
+export function deal (params) {
+  return request({
+    url: `${url}/deal`,
+    method: 'post',
+    data: params
+  })
+}
