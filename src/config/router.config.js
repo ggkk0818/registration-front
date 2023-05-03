@@ -622,6 +622,11 @@ export const asyncRouterMap = [
       name: 'patientAppointmentList',
       component: () => import('@/views/patient-appointment/list'),
       meta: { title: '我的预约', keepAlive: true, permission: ['patientAppointment'] }
+    }, {
+      path: '/patient-appointment/list/detail/:id',
+      name: 'patientAppointmentDetail',
+      component: () => import('@/views/patient-appointment/list/detail'),
+      meta: { title: '预约详情', keepAlive: true, permission: ['patientAppointment'] }
     }]
   },
   {

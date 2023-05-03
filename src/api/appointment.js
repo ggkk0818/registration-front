@@ -13,6 +13,30 @@ export function getAppointmentList (params) {
   })
 }
 /**
+ * 患者查询我的预约
+ * @param {*} params
+ * @returns
+ */
+export function getPatientAppointmentList (params) {
+  return request({
+    url: `${url}/my`,
+    method: 'get',
+    params: params
+  })
+}
+/**
+ * 医生查询患者预约
+ * @param {*} params
+ * @returns
+ */
+export function getDoctorAppointmentList (params) {
+  return request({
+    url: `${url}/patient`,
+    method: 'get',
+    params: params
+  })
+}
+/**
  * 查询预约详情
  * @param {*} id
  * @returns
@@ -90,5 +114,17 @@ export function deal (params) {
     url: `${url}/deal`,
     method: 'post',
     data: params
+  })
+}
+/**
+ * 患者候诊
+ * @param {*} id
+ * @returns
+ */
+export function checkin (id) {
+  return request({
+    url: `${url}/checkin`,
+    method: 'post',
+    data: { id }
   })
 }

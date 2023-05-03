@@ -5,45 +5,28 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="姓名">
-                <a-input v-model="queryParam.name" placeholder="" />
+              <a-form-item label="患者姓名">
+                <a-input v-model="queryParam.patientName" style="width: 100%" placeholder="" />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="状态">
-                <a-select v-model="queryParam.isEnabled" placeholder="请选择">
-                  <a-select-option value="0">禁用</a-select-option>
-                  <a-select-option value="1">启用</a-select-option>
+                <a-select v-model="queryParam.status" placeholder="请选择" allow-clear>
+                  <a-select-option :value="item.value" v-for="(item, index) of APPOINTMENT_STATUS_LIST" :key="index">{{
+                    item.text
+                  }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="调用次数">
-                  <a-input-number v-model="queryParam.callNo" style="width: 100%" />
+                <a-form-item label="患者手机号">
+                  <a-input v-model="queryParam.paatientMobile" style="width: 100%" placeholder="" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="更新日期">
-                  <a-date-picker v-model="queryParam.date" style="width: 100%" placeholder="请输入更新日期" />
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="使用状态">
-                  <a-select v-model="queryParam.useStatus" placeholder="请选择" default-value="0">
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="使用状态">
-                  <a-select placeholder="请选择" default-value="0">
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
-                  </a-select>
+                <a-form-item label="医生姓名">
+                  <a-input v-model="queryParam.docName" style="width: 100%" placeholder="" />
                 </a-form-item>
               </a-col>
             </template>
@@ -89,25 +72,22 @@
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
-        <span slot="isEnabled" slot-scope="text">
+        <span slot="status" slot-scope="text">
           <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
         </span>
         <span slot="remark" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
-        <span slot="updateTime" slot-scope="text">
+        <span slot="dateTime" slot-scope="text">
           {{ text | moment }}
         </span>
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleView(record)">查看</a>
             <a-divider type="vertical" />
-            <a v-if="record.isEnabled" @click="handleEdit(record)">停用</a>
-            <a v-else @click="handleEdit(record)">启用</a>
-            <a-divider type="vertical" />
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="handleDel(record)">删除</a>
+            <a @click="handleDel(record)">取消</a>
           </template>
         </span>
       </s-table>
@@ -119,38 +99,47 @@
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { getAppointmentList, delAppointment, createResource } from '@/api/appointment'
-
+import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_LIST } from '@/utils/consts'
 const columns = [
   {
     title: '#',
     scopedSlots: { customRender: 'serial' }
   },
   {
-    title: '用户名',
-    dataIndex: 'name'
+    title: '患者姓名',
+    dataIndex: 'patientName'
+  },
+  {
+    title: '患者手机号',
+    dataIndex: 'patientMobile'
   },
   {
     title: '医生姓名',
-    dataIndex: 'realName'
+    dataIndex: 'docName'
   },
   {
-    title: '手机号',
-    dataIndex: 'mobile'
+    title: '科室',
+    dataIndex: 'deptName'
   },
   {
-    title: '描述',
-    dataIndex: 'description',
-    scopedSlots: { customRender: 'description' }
+    title: '就诊时间',
+    dataIndex: 'diagnoseTime',
+    scopedSlots: { customRender: 'dateTime' }
+  },
+  {
+    title: '诊断结果',
+    dataIndex: 'diagnoseResult',
+    scopedSlots: { customRender: 'diagnoseResult' }
   },
   {
     title: '状态',
-    dataIndex: 'isEnabled',
-    scopedSlots: { customRender: 'isEnabled' }
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '更新时间',
     dataIndex: 'updateTime',
-    scopedSlots: { customRender: 'updateTime' }
+    scopedSlots: { customRender: 'dateTime' }
   },
   {
     title: '操作',
@@ -161,17 +150,25 @@ const columns = [
 ]
 
 const statusMap = {
-  0: {
-    status: 'default',
-    text: '停用'
+  [APPOINTMENT_STATUS.LOCK]: {
+    status: 'warning',
+    text: '待确认'
   },
-  1: {
+  [APPOINTMENT_STATUS.RESERVED]: {
     status: 'success',
-    text: '启用'
+    text: '预约成功'
   },
-  2: {
-    status: 'error',
-    text: '异常'
+  [APPOINTMENT_STATUS.DIAGNOSE_HOLD]: {
+    status: 'processing',
+    text: '候诊'
+  },
+  [APPOINTMENT_STATUS.DIAGNOSE_DONE]: {
+    status: 'default',
+    text: '已完成'
+  },
+  [APPOINTMENT_STATUS.CANCEL]: {
+    status: 'default',
+    text: '已取消'
   }
 }
 
@@ -184,7 +181,7 @@ export default {
   data () {
     this.columns = columns
     return {
-      // create model
+      APPOINTMENT_STATUS_LIST,
       visible: false,
       confirmLoading: false,
       mdl: null,
@@ -231,7 +228,7 @@ export default {
     handleDel (record) {
       this.$confirm({
         title: '提示',
-        content: '是否确认删除？',
+        content: '是否确认取消？',
         onOk: () => {
           delAppointment(record.id).then(() => {
             this.$message.success('操作成功')
@@ -246,12 +243,14 @@ export default {
         content: '确定重新生成当天号源？',
         onOk: () => {
           this.confirmLoading = true
-          createResource().then(() => {
-            this.$message.success('操作成功')
-            this.$refs.table.refresh()
-          }).finally(() => {
-            this.confirmLoading = false
-          })
+          createResource()
+            .then(() => {
+              this.$message.success('操作成功')
+              this.$refs.table.refresh()
+            })
+            .finally(() => {
+              this.confirmLoading = false
+            })
         }
       })
     },
