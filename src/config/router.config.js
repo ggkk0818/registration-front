@@ -630,6 +630,13 @@ export const asyncRouterMap = [
       hidden: true
     }]
   },
+  // 首页
+  {
+    path: '/',
+    name: 'patientDashboard',
+    component: () => import('@/views/dashboard/Patient'),
+    meta: { title: '首页', keepAlive: false }
+  },
   {
     path: '*',
     redirect: '/404',
@@ -670,15 +677,9 @@ export const constantRouterMap = [
       }
     ]
   },
-  // 首页
-  {
-    path: '/',
-    name: 'patientDashboard',
-    component: () => import('@/views/dashboard/Patient'),
-    meta: { title: '首页', keepAlive: false }
-  },
   {
     path: '/404',
+    name: 'exception404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
 ]

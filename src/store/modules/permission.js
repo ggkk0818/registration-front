@@ -11,10 +11,12 @@ import cloneDeep from 'lodash.clonedeep'
 function hasPermission (permission, route) {
   if (route.meta && route.meta.permission) {
     let flag = false
-    for (let i = 0, len = permission.length; i < len; i++) {
-      flag = route.meta.permission.includes(permission[i])
-      if (flag) {
-        return true
+    if (permission && permission.length > 0) {
+      for (let i = 0, len = permission.length; i < len; i++) {
+        flag = route.meta.permission.includes(permission[i])
+        if (flag) {
+          return true
+        }
       }
     }
     return false
@@ -40,7 +42,7 @@ function hasRole(roles, route) {
 
 function filterAsyncRouter (routerMap, role) {
   const accessedRouters = routerMap.filter(route => {
-    if (hasPermission(role.permissionList, route)) {
+    if (hasPermission(role?.permissionList, route)) {
       if (route.children && route.children.length) {
         route.children = filterAsyncRouter(route.children, role)
       }
@@ -65,7 +67,7 @@ const permission = {
   actions: {
     GenerateRoutes ({ commit }, data) {
       return new Promise(resolve => {
-        const { role } = data
+        const { role } = data || {}
         const routerMap = cloneDeep(asyncRouterMap)
         const accessedRouters = filterAsyncRouter(routerMap, role)
         commit('SET_ROUTERS', accessedRouters)

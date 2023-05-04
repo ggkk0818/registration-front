@@ -1,4 +1,4 @@
-import router from './router'
+import router, { resetRouter } from './router'
 import store from './store'
 import storage from 'store'
 import NProgress from 'nprogress' // progress bar
@@ -11,7 +11,7 @@ import { i18nRender } from '@/locales'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const allowList = ['login', 'register', 'registerResult', 'patientDashboard'] // no redirect allowList
+const allowList = ['login', 'register', 'registerResult', 'exception404', 'patientDashboard'] // no redirect allowList
 const loginRoutePath = '/user/login'
 const defaultRoutePath = '/'
 
@@ -35,6 +35,9 @@ router.beforeEach((to, from, next) => {
             store.dispatch('GenerateRoutes', { role }).then(() => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
+              console.log('router', router)
+              resetRouter()
+              console.log('router', router)
               // VueRouter@3.5.0+ New API
               store.getters.addRouters.forEach(r => {
                 router.addRoute(r)
@@ -72,6 +75,20 @@ router.beforeEach((to, from, next) => {
         next()
       }
     }
+  } else if (!router.hasDynamicRoute) {
+    // 初始化先加载无需权限的页面路由
+    store.dispatch('GenerateRoutes').then(() => {
+      store.getters.addRouters.forEach(r => {
+        console.log('初始化加载路由', r)
+        router.addRoute(r)
+      })
+      router.hasDynamicRoute = true
+      // 重新进入beforeEach
+      next({
+        ...to,
+        replace: true
+      })
+    })
   } else {
     if (allowList.includes(to.name)) {
       // 在免登录名单，直接进入
