@@ -113,6 +113,19 @@ export const AdminRole = {
   }]
 }
 
+export const DoctorRole = {
+  id: 'doctor',
+  name: '医生用户',
+  describe: '',
+  permissions: [{
+    roleId: 'doctor',
+    permissionId: 'doctorAppointment',
+    permissionName: '预约',
+    actionEntitySet: [],
+    actionList: ['add', 'query', 'get', 'update', 'delete']
+  }]
+}
+
 export const UserRole = {
   id: 'user',
   name: '普通用户',

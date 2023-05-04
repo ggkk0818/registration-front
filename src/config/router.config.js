@@ -630,6 +630,35 @@ export const asyncRouterMap = [
       hidden: true
     }]
   },
+  {
+    path: '/',
+    name: 'doctorAppointment',
+    component: PatientLayout,
+    meta: { title: '预约诊断', permission: ['doctorAppointment'] },
+    children: [{
+      path: '/dashboard',
+      name: 'doctorDashboard',
+      component: () => import('@/views/dashboard/Doctor'),
+      meta: { title: '首页', keepAlive: false }
+    }, {
+      path: '/doctor-appointment/list',
+      name: 'doctorAppointmentList',
+      component: () => import('@/views/doctor-appointment/list'),
+      meta: { title: '预约列表', keepAlive: true, permission: ['doctorAppointment'] }
+    }, {
+      path: '/doctor-appointment/list/diagnose/:id',
+      name: 'doctorAppointmentDiagnose',
+      component: () => import('@/views/doctor-appointment/list/diagnose'),
+      meta: { title: '预约诊断', keepAlive: true, permission: ['doctorAppointment'] },
+      hidden: true
+    }, {
+      path: '/doctor-appointment/list/detail/:id',
+      name: 'doctorAppointmentDetail',
+      component: () => import('@/views/doctor-appointment/list/detail'),
+      meta: { title: '预约详情', keepAlive: true, permission: ['doctorAppointment'] },
+      hidden: true
+    }]
+  },
   // 首页
   {
     path: '/',

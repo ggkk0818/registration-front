@@ -2,7 +2,7 @@ import storage from 'store'
 import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
-import { AdminRole, UserRole } from '@/config/role.config'
+import { AdminRole, DoctorRole, UserRole } from '@/config/role.config'
 import { cloneDeep } from 'lodash'
 
 const user = {
@@ -55,7 +55,18 @@ const user = {
         getInfo().then(data => {
           console.log('getInfo', data)
           const result = data || {}
-          const role = cloneDeep(result.roleId === AdminRole.id ? AdminRole : UserRole)
+          let role = null
+          switch (result.roleId) {
+            case AdminRole.id:
+              role = cloneDeep(AdminRole)
+              break
+            case DoctorRole.id:
+              role = cloneDeep(DoctorRole)
+              break
+            default:
+              role = cloneDeep(UserRole)
+              break
+          }
           role.permissions.map(per => {
             if (per.actionEntitySet != null && per.actionEntitySet.length > 0) {
               const action = per.actionEntitySet.map(action => { return action.action })
