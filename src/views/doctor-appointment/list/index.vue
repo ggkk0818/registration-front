@@ -49,14 +49,18 @@
         <span slot="status" slot-scope="text">
           <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
         </span>
-        <span slot="remark" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+        <span slot="diagnoseResult" slot-scope="text">
+          <ellipsis :length="20" tooltip>{{ text }}</ellipsis>
         </span>
         <span slot="dateTime" slot-scope="text">
           {{ text | moment }}
         </span>
         <span slot="action" slot-scope="text, record">
           <template>
+            <template v-if="record.status === APPOINTMENT_STATUS.DIAGNOSE_HOLD">
+              <a @click="handleEdit(record)">诊断</a>
+              <a-divider type="vertical" />
+            </template>
             <a @click="handleView(record)">查看</a>
             <a-divider type="vertical" />
             <a @click="handleDel(record)">取消</a>
@@ -70,7 +74,7 @@
 <script>
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
-import { getPatientAppointmentList, delAppointment } from '@/api/appointment'
+import { getDoctorAppointmentList, delAppointment } from '@/api/appointment'
 import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_LIST, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
 const columns = [
   {
@@ -130,6 +134,7 @@ export default {
   data () {
     this.columns = columns
     return {
+      APPOINTMENT_STATUS,
       APPOINTMENT_STATUS_LIST,
       visible: false,
       confirmLoading: false,
@@ -142,7 +147,7 @@ export default {
       loadData: (parameter) => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getPatientAppointmentList(requestParameters)
+        return getDoctorAppointmentList(requestParameters)
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -169,7 +174,7 @@ export default {
       this.$router.push({ path: `${this.$route.path}/add` })
     },
     handleEdit (record) {
-      this.$router.push({ path: `${this.$route.path}/edit/${record.id}` })
+      this.$router.push({ path: `${this.$route.path}/diagnose/${record.id}` })
     },
     handleView (record) {
       this.$router.push({ path: `${this.$route.path}/detail/${record.id}` })

@@ -21,6 +21,11 @@
         <div class="hold-tips" v-if="detailData.status === APPOINTMENT_STATUS.DIAGNOSE_HOLD">
           <p><a-icon type="info-circle" />请等待医生叫号</p>
         </div>
+        <!-- 诊断结果 -->
+        <div class="reseult" v-if="detailData.status === APPOINTMENT_STATUS.DIAGNOSE_DONE">
+          <a-descriptions title="诊断结果"></a-descriptions>
+          <pre>{{ detailData.diagnoseResult || '暂无' }}</pre>
+        </div>
       </template>
       <a-empty v-else />
     </a-card>
@@ -120,5 +125,8 @@ export default {
   .anticon {
     margin-right: 8px;
   }
+}
+.result {
+  padding: 20px;
 }
 </style>

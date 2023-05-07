@@ -128,3 +128,15 @@ export function checkin (id) {
     data: { id }
   })
 }
+/**
+ * 医生诊断
+ * @param {*} params
+ * @returns
+ */
+export function diagnose (params) {
+  return request({
+    url: `${url}/diagnose`,
+    method: 'post',
+    data: params
+  })
+}

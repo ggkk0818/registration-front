@@ -11,15 +11,9 @@
           <a-descriptions-item label="状态">{{ detailData.status | statusFilter }}</a-descriptions-item>
         </a-descriptions>
         <a-divider style="margin: 20px 0" />
-        <!-- 候诊二维码 -->
-        <div class="qr-code" v-if="detailData.status === APPOINTMENT_STATUS.RESERVED">
-          <p>请在分诊时出示此二维码</p>
-          <img :src="qrcodeImg" />
-          <a-button type="link" :disabled="isLoadingSubmit" @click="checkIn">手动签到</a-button>
-        </div>
-        <!-- 候诊提示 -->
-        <div class="hold-tips" v-if="detailData.status === APPOINTMENT_STATUS.DIAGNOSE_HOLD">
-          <p><a-icon type="info-circle" />请等待医生叫号</p>
+        <div class="reseult">
+          <a-descriptions title="诊断结果"></a-descriptions>
+          <pre>{{ detailData.diagnoseResult || '暂无' }}</pre>
         </div>
       </template>
       <a-empty v-else />
@@ -28,7 +22,6 @@
 </template>
 
 <script>
-import QRCode from 'qrcode'
 import { getAppointmentDetail, checkin } from '@/api/appointment'
 import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
 export default {
@@ -60,13 +53,6 @@ export default {
       try {
         const data = await getAppointmentDetail(this.$route.params.id)
         this.detailData = data || null
-        if (data) {
-          // 使用预约id生成二维码
-          QRCode.toDataURL(data.id, { width: 300, margin: 1 }, (err, url) => {
-            console.log('生成二维码', err, url)
-            this.qrcodeImg = url
-          })
-        }
       } finally {
         this.isLoading = false
       }
@@ -100,25 +86,7 @@ export default {
   font-weight: 500;
   margin-bottom: 16px;
 }
-.qr-code {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  max-width: 500px;
-  margin: 0 auto;
+.result {
   padding: 20px;
-  p {
-    margin: 0;
-  }
-  img {
-    max-width: 100%;
-  }
-}
-.hold-tips {
-  padding: 20px;
-  text-align: center;
-  .anticon {
-    margin-right: 8px;
-  }
 }
 </style>

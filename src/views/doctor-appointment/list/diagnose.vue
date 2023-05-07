@@ -11,16 +11,25 @@
           <a-descriptions-item label="状态">{{ detailData.status | statusFilter }}</a-descriptions-item>
         </a-descriptions>
         <a-divider style="margin: 20px 0" />
-        <!-- 候诊二维码 -->
-        <div class="qr-code" v-if="detailData.status === APPOINTMENT_STATUS.RESERVED">
-          <p>请在分诊时出示此二维码</p>
-          <img :src="qrcodeImg" />
-          <a-button type="link" :disabled="isLoadingSubmit" @click="checkIn">手动签到</a-button>
-        </div>
-        <!-- 候诊提示 -->
-        <div class="hold-tips" v-if="detailData.status === APPOINTMENT_STATUS.DIAGNOSE_HOLD">
-          <p><a-icon type="info-circle" />请等待医生叫号</p>
-        </div>
+        <!-- 诊断表单 -->
+        <a-form-model
+          ref="form"
+          :model="formData"
+          :rules="formRules"
+          :label-col="{ lg: { span: 7 }, sm: { span: 7 } }"
+          :wrapper-col="{ lg: { span: 10 }, sm: { span: 17 } }"
+        >
+          <a-form-model-item label="诊断信息" prop="diagnoseResult">
+            <a-textarea
+              rows="4"
+              v-model="formData.diagnoseResult"
+              placeholder="请输入诊断信息" />
+          </a-form-model-item>
+          <a-form-model-item :wrapperCol="{ span: 24 }" style="text-align: center">
+            <a-button type="primary" :loading="isLoadingSubmit" @click="onSubmit">提交</a-button>
+            <a-button style="margin-left: 8px" :disabled="isLoadingSubmit">重置</a-button>
+          </a-form-model-item>
+        </a-form-model>
       </template>
       <a-empty v-else />
     </a-card>
@@ -28,8 +37,7 @@
 </template>
 
 <script>
-import QRCode from 'qrcode'
-import { getAppointmentDetail, checkin } from '@/api/appointment'
+import { getAppointmentDetail, diagnose } from '@/api/appointment'
 import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
 export default {
   data () {
@@ -38,7 +46,13 @@ export default {
       isLoading: false,
       isLoadingSubmit: false,
       detailData: null,
-      qrcodeImg: null
+      qrcodeImg: null,
+      formData: {
+        diagnoseResult: ''
+      },
+      formRules: {
+        diagnoseResult: [{ required: true, message: '请输入诊断信息' }]
+      }
     }
   },
   computed: {
@@ -61,25 +75,29 @@ export default {
         const data = await getAppointmentDetail(this.$route.params.id)
         this.detailData = data || null
         if (data) {
-          // 使用预约id生成二维码
-          QRCode.toDataURL(data.id, { width: 300, margin: 1 }, (err, url) => {
-            console.log('生成二维码', err, url)
-            this.qrcodeImg = url
-          })
+          this.formData.diagnoseResult = data.diagnoseResult || ''
         }
       } finally {
         this.isLoading = false
       }
     },
-    async checkIn () {
+    // 提交
+    async onSubmit () {
       this.isLoadingSubmit = true
       try {
-        await checkin(this.detailData.id)
+        const params = {
+          ...this.formData,
+          id: this.detailData.id
+        }
+        await diagnose(params)
         this.$message.success('操作成功')
-        this.init()
+        this.back()
       } finally {
         this.isLoadingSubmit = false
       }
+    },
+    back () {
+      this.$router.back()
     }
   },
   filters: {
