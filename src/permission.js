@@ -14,8 +14,12 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const allowList = ['login', 'register', 'registerResult', 'exception404', 'patientDashboard'] // no redirect allowList
 const loginRoutePath = '/user/login'
 const defaultRoutePath = '/'
-
+let isLoading = false
 router.beforeEach((to, from, next) => {
+  // 防止加载动态路由时重复触发
+  if (isLoading) {
+    return
+  }
   NProgress.start() // start progress bar
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`)
   /* has token */
@@ -35,13 +39,12 @@ router.beforeEach((to, from, next) => {
             store.dispatch('GenerateRoutes', { role }).then(() => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
-              console.log('router', router)
               resetRouter()
-              console.log('router', router)
-              // VueRouter@3.5.0+ New API
+              isLoading = true
               store.getters.addRouters.forEach(r => {
                 router.addRoute(r)
               })
+              isLoading = false
               // 请求带有 redirect 重定向时，登录自动重定向到该地址
               let redirect = from.query.redirect ? decodeURIComponent(from.query.redirect) : null
               const firstMenu = store.getters.firstMenu
@@ -78,10 +81,11 @@ router.beforeEach((to, from, next) => {
   } else if (!router.hasDynamicRoute) {
     // 初始化先加载无需权限的页面路由
     store.dispatch('GenerateRoutes').then(() => {
+      isLoading = true
       store.getters.addRouters.forEach(r => {
-        console.log('初始化加载路由', r)
         router.addRoute(r)
       })
+      isLoading = false
       router.hasDynamicRoute = true
       // 重新进入beforeEach
       next({

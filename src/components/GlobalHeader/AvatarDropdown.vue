@@ -29,6 +29,7 @@
 
 <script>
 import { Modal } from 'ant-design-vue'
+import router, { resetRouter } from '@/router'
 
 export default {
   name: 'AvatarDropdown',
@@ -58,6 +59,10 @@ export default {
           //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
           // }).catch(() => console.log('Oops errors!'))
           return this.$store.dispatch('Logout').then(() => {
+            console.log('重置路由')
+            resetRouter()
+            router.hasDynamicRoute = false
+            console.log('跳转登录')
             this.$router.push({ name: 'login' })
           })
         },

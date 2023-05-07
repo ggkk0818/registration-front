@@ -633,7 +633,7 @@ export const asyncRouterMap = [
   {
     path: '/',
     name: 'doctorAppointment',
-    component: PatientLayout,
+    component: BasicLayout,
     meta: { title: '预约诊断', permission: ['doctorAppointment'] },
     children: [{
       path: '/dashboard',
