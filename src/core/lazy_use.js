@@ -49,7 +49,9 @@ import {
   message,
   notification
 } from 'ant-design-vue'
+import Vant from 'vant'
 import Viser from 'viser-vue'
+import 'vant/lib/index.css'
 
 // ext library
 import VueCropper from 'vue-cropper'
@@ -103,7 +105,7 @@ Vue.use(Result)
 Vue.use(Statistic)
 Vue.use(Descriptions)
 Vue.use(Space)
-
+Vue.use(Vant)
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
 Vue.prototype.$notification = notification

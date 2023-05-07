@@ -1,7 +1,5 @@
 import Vue from 'vue'
-import moment from 'moment'
-import 'moment/locale/zh-cn'
-moment.locale('zh-cn')
+import { formatDate } from './util'
 
 Vue.filter('NumberFormat', function (value) {
   if (!value) {
@@ -12,9 +10,9 @@ Vue.filter('NumberFormat', function (value) {
 })
 
 Vue.filter('dayjs', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
-  return dataStr ? moment(dataStr).format(pattern) : ''
+  return formatDate(dataStr, pattern)
 })
 
 Vue.filter('moment', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
-  return dataStr ? moment(dataStr).format(pattern) : ''
+  return formatDate(dataStr, pattern)
 })

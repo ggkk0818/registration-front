@@ -59,7 +59,7 @@
           <template>
             <a @click="handleView(record)">查看</a>
             <a-divider type="vertical" />
-            <a @click="handleDel(record)">取消</a>
+            <a :disabled="record.status === APPOINTMENT_STATUS.CANCEL" @click="handleDel(record)">取消</a>
           </template>
         </span>
       </s-table>
@@ -76,14 +76,6 @@ const columns = [
   {
     title: '#',
     scopedSlots: { customRender: 'serial' }
-  },
-  {
-    title: '患者姓名',
-    dataIndex: 'patientName'
-  },
-  {
-    title: '患者手机号',
-    dataIndex: 'patientMobile'
   },
   {
     title: '医生姓名',
@@ -130,6 +122,7 @@ export default {
   data () {
     this.columns = columns
     return {
+      APPOINTMENT_STATUS,
       APPOINTMENT_STATUS_LIST,
       visible: false,
       confirmLoading: false,

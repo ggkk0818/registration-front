@@ -1,3 +1,7 @@
+import moment from 'moment'
+import 'moment/locale/zh-cn'
+moment.locale('zh-cn')
+
 export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
@@ -106,4 +110,8 @@ export function getFirstPath (router) {
   } else {
     return router && router.path || '/'
   }
+}
+
+export function formatDate (dataStr, pattern = '') {
+  return dataStr ? moment(dataStr).format(pattern) : ''
 }

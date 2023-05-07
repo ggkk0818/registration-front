@@ -11,7 +11,11 @@
           <a-descriptions-item label="描述"> {{ doctorData && doctorData.description }}</a-descriptions-item>
         </a-descriptions>
       </a-card>
-      <a-card :bordered="false" style="margin-top: 20px">
+      <template v-if="isMobile">
+        <a-descriptions class="mobile-title" title="预约时段" style="margin-top: 20px;"></a-descriptions>
+        <mobile-table ref="table" :data="loadData" @click="lockResource"></mobile-table>
+      </template>
+      <a-card v-else :bordered="false" style="margin-top: 20px">
         <a-descriptions title="预约时段"></a-descriptions>
         <s-table
           ref="table"
@@ -95,6 +99,7 @@ import { mapGetters } from 'vuex'
 import { getDoctorResourceList } from '@/api/doctor'
 import { prepare, deal } from '@/api/appointment'
 import { STable, Ellipsis } from '@/components'
+import MobileTable from './components/SourceMobileTable'
 // 预约步骤
 const APPOINTMENT_STEP = {
   TIME: 1, // 选择时间
@@ -131,7 +136,8 @@ const columns = [
 export default {
   components: {
     STable,
-    Ellipsis
+    Ellipsis,
+    MobileTable
   },
   data () {
     return {
@@ -149,7 +155,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['isMobile', 'userInfo'])
   },
   watch: {
     $route: {
@@ -228,6 +234,12 @@ export default {
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 16px;
+}
+.mobile-title::v-deep {
+  margin-top: 20px;
+  .ant-descriptions-title {
+    margin-bottom: 8px;
+  }
 }
 .result-info {
   display: flex;
