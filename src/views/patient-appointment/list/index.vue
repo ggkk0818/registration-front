@@ -21,6 +21,7 @@
             <a-col :md="(!advanced && 8) || 24" :sm="24">
               <span
                 class="table-page-search-submitButtons"
+                :class="isMobile ? 'is-mobile' : ''"
                 :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
               >
                 <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
@@ -31,10 +32,8 @@
         </a-form>
       </div>
 
-      <div class="table-operator">
-      </div>
-
       <s-table
+        v-if="!isMobile"
         ref="table"
         size="default"
         rowKey="id"
@@ -58,18 +57,29 @@
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleView(record)">查看</a>
-            <a-divider type="vertical" />
-            <a :disabled="record.status === APPOINTMENT_STATUS.CANCEL" @click="handleDel(record)">取消</a>
+            <template v-if="record.status !== APPOINTMENT_STATUS.DIAGNOSE_DONE">
+              <a-divider type="vertical" />
+              <a :disabled="record.status === APPOINTMENT_STATUS.CANCEL" @click="handleDel(record)">取消</a>
+            </template>
           </template>
         </span>
       </s-table>
     </a-card>
+    <mobile-table
+      v-if="isMobile"
+      ref="table"
+      :data="loadData"
+      style="margin-top: 20px"
+      @click="handleView"
+    ></mobile-table>
   </page-header-wrapper>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
+import MobileTable from './components/MobileTable'
 import { getPatientAppointmentList, delAppointment } from '@/api/appointment'
 import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_LIST, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
 const columns = [
@@ -117,7 +127,8 @@ export default {
   name: 'PatientAppointmentList',
   components: {
     STable,
-    Ellipsis
+    Ellipsis,
+    MobileTable
   },
   data () {
     this.columns = columns
@@ -138,18 +149,14 @@ export default {
         return getPatientAppointmentList(requestParameters)
       },
       selectedRowKeys: [],
-      selectedRows: []
-    }
-  },
-  filters: {
-    statusFilter (type) {
-      return APPOINTMENT_STATUS_MAP[type].text
-    },
-    statusTypeFilter (type) {
-      return APPOINTMENT_STATUS_MAP[type].status
+      selectedRows: [],
+      actionSheetVisible: false, // 移动端取消预约面板开关
+      actionSheetData: null, // 当前取消预约记录
+      actions: [{ code: 'remove', name: '取消预约', color: '#ee0a24' }]
     }
   },
   computed: {
+    ...mapGetters(['isMobile']),
     rowSelection () {
       return {
         selectedRowKeys: this.selectedRowKeys,
@@ -168,15 +175,27 @@ export default {
       this.$router.push({ path: `${this.$route.path}/detail/${record.id}` })
     },
     handleDel (record) {
-      this.$confirm({
-        title: '提示',
-        content: '是否确认取消？',
-        onOk: () => {
-          delAppointment(record.id).then(() => {
-            this.$message.success('操作成功')
-            this.$refs.table.refresh()
-          })
-        }
+      if (this.isMobile) {
+        this.actionSheetVisible = true
+      } else {
+        this.$confirm({
+          title: '提示',
+          content: '是否确认取消？',
+          onOk: () => {
+            this.doCancel(record)
+          }
+        })
+      }
+    },
+    onSelect (item) {
+      if (item?.code === 'remove') {
+        this.doCancel(this.actionSheetData)
+      }
+    },
+    doCancel (record) {
+      delAppointment(record.id).then(() => {
+        this.$message.success('操作成功')
+        this.$refs.table.refresh()
       })
     },
     onSelectChange (selectedRowKeys, selectedRows) {
@@ -191,6 +210,19 @@ export default {
         date: moment(new Date())
       }
     }
+  },
+  filters: {
+    statusFilter (type) {
+      return APPOINTMENT_STATUS_MAP[type].text
+    },
+    statusTypeFilter (type) {
+      return APPOINTMENT_STATUS_MAP[type].status
+    }
   }
 }
 </script>
+<style lang="less" scoped>
+.table-page-search-submitButtons.is-mobile {
+  margin-bottom: 0;
+}
+</style>

@@ -24,7 +24,7 @@
     <template v-slot:headerContentRender>
       <div>
         <a-tooltip title="刷新页面">
-          <a-icon type="reload" style="font-size: 18px;cursor: pointer;" @click="() => { $message.info('只是一个DEMO') }" />
+          <a-icon type="reload" style="font-size: 18px;cursor: pointer;" @click="refresh()" />
         </a-tooltip>
       </div>
     </template>
@@ -41,7 +41,7 @@
     <!-- <template v-slot:footerRender>
       <global-footer />
     </template> -->
-    <router-view />
+    <router-view :key="routeViewKey" />
   </pro-layout>
 </template>
 
@@ -96,9 +96,10 @@ export default {
       },
       // 媒体查询
       query: {},
-
       // 是否手机模式
-      isMobile: false
+      isMobile: false,
+      // 页面组件刷新标志
+      routeViewKey: Date.now()
     }
   },
   computed: {
@@ -169,6 +170,9 @@ export default {
           }
           break
       }
+    },
+    refresh () {
+      this.routeViewKey = Date.now()
     }
   }
 }

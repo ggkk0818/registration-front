@@ -21,6 +21,15 @@
         <div class="hold-tips" v-if="detailData.status === APPOINTMENT_STATUS.DIAGNOSE_HOLD">
           <p><a-icon type="info-circle" />请等待医生叫号</p>
         </div>
+        <!-- 取消预约 -->
+        <div
+          class="actions"
+          v-if="
+            detailData.status !== APPOINTMENT_STATUS.DIAGNOSE_DONE && detailData.status !== APPOINTMENT_STATUS.CANCEL
+          "
+        >
+          <a-button type="link" :disabled="isLoadingSubmit" @click="handleDel">取消预约</a-button>
+        </div>
         <!-- 诊断结果 -->
         <div class="reseult" v-if="detailData.status === APPOINTMENT_STATUS.DIAGNOSE_DONE">
           <a-descriptions title="诊断结果"></a-descriptions>
@@ -29,12 +38,20 @@
       </template>
       <a-empty v-else />
     </a-card>
+    <van-action-sheet
+      v-model="actionSheetVisible"
+      :actions="actions"
+      cancel-text="取消"
+      close-on-click-action
+      @select="onSelect"
+    />
   </page-header-wrapper>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import QRCode from 'qrcode'
-import { getAppointmentDetail, checkin } from '@/api/appointment'
+import { getAppointmentDetail, checkin, delAppointment } from '@/api/appointment'
 import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
 export default {
   data () {
@@ -43,10 +60,13 @@ export default {
       isLoading: false,
       isLoadingSubmit: false,
       detailData: null,
-      qrcodeImg: null
+      qrcodeImg: null,
+      actionSheetVisible: false, // 移动端取消预约面板开关
+      actions: [{ code: 'remove', name: '取消预约', color: '#ee0a24' }]
     }
   },
   computed: {
+    ...mapGetters(['isMobile']),
     isEdit ({ $route }) {
       return !!$route.params.id
     }
@@ -57,6 +77,11 @@ export default {
         this.init()
       },
       immediate: true
+    },
+    isMobile (val) {
+      if (!val) {
+        this.actionSheetVisible = false
+      }
     }
   },
   methods: {
@@ -85,6 +110,38 @@ export default {
       } finally {
         this.isLoadingSubmit = false
       }
+    },
+    // 取消预约
+    handleDel () {
+      if (!this.detailData) {
+        return
+      }
+      if (this.isMobile) {
+        this.actionSheetVisible = true
+      } else {
+        this.$confirm({
+          title: '提示',
+          content: '是否确认取消？',
+          onOk: () => {
+            this.doCancel()
+          }
+        })
+      }
+    },
+    onSelect (item) {
+      if (item?.code === 'remove') {
+        this.doCancel()
+      }
+    },
+    doCancel () {
+      delAppointment(this.detailData.id)
+        .then(() => {
+          this.$message.success('操作成功')
+          this.init()
+        })
+        .finally(() => {
+          this.isLoadingSubmit = true
+        })
     }
   },
   filters: {
@@ -111,7 +168,7 @@ export default {
   flex-direction: column;
   max-width: 500px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 20px 0;
   p {
     margin: 0;
   }
@@ -124,6 +181,12 @@ export default {
   text-align: center;
   .anticon {
     margin-right: 8px;
+  }
+}
+.actions {
+  text-align: center;
+  .ant-btn-link {
+    color: #f5222d;
   }
 }
 .result {
