@@ -61,7 +61,7 @@ import { mapGetters } from 'vuex'
 import { STable, Ellipsis } from '@/components'
 import MobileTable from './components/DocMobileTable'
 import { getDoctorResourceList } from '@/api/doctor'
-
+import socketService, { STOMP_EVENT } from '@/utils/socketService'
 const columns = [
   {
     title: '#',
@@ -130,6 +130,12 @@ export default {
       }
     }
   },
+  created () {
+    socketService.on(STOMP_EVENT.RESOURCE, this.onResourceUpdate)
+  },
+  destroyed () {
+    socketService.off(STOMP_EVENT.RESOURCE, this.onResourceUpdate)
+  },
   methods: {
     handleView (record) {
       this.$router.push({ path: `${this.$route.path}/deal/${record.id}` })
@@ -145,6 +151,9 @@ export default {
       this.queryParam = {
         date: moment(new Date())
       }
+    },
+    onResourceUpdate (msg) {
+      console.log('号源实时消息', msg)
     }
   }
 }

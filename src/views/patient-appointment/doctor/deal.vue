@@ -100,6 +100,7 @@ import { getDoctorResourceList } from '@/api/doctor'
 import { prepare, deal } from '@/api/appointment'
 import { STable, Ellipsis } from '@/components'
 import MobileTable from './components/SourceMobileTable'
+import socketService, { STOMP_EVENT } from '@/utils/socketService'
 // 预约步骤
 const APPOINTMENT_STEP = {
   TIME: 1, // 选择时间
@@ -165,6 +166,12 @@ export default {
       immediate: true
     }
   },
+  created () {
+    socketService.on(STOMP_EVENT.RESOURCE, this.onResourceUpdate)
+  },
+  destroyed () {
+    socketService.off(STOMP_EVENT.RESOURCE, this.onResourceUpdate)
+  },
   methods: {
     async init () {
       this.isLoading = true
@@ -223,6 +230,21 @@ export default {
     // 进入我的预约
     goMy () {
       this.$router.replace('/patient-appointment/list')
+    },
+    // 实时消息推送
+    onResourceUpdate (msg) {
+      console.log('号源实时消息', msg)
+      if (msg?.userId === this.userInfo.id) {
+        return
+      }
+      const resource = msg?.data
+      const row = this.resourceList.find(item => item.id === resource?.id)
+      if (row) {
+        const hasCache = this.doctorData?.cache?.resourceId === row.id
+        const resourceCount = (resource.resourceCount || 0) + (hasCache ? 1 : 0)
+        console.log('更新号源', row.id, '数量', resourceCount)
+        this.$set(row, 'resourceCount', resourceCount)
+      }
     }
   }
 }

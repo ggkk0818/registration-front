@@ -118,6 +118,12 @@ const vueConfig = {
           //   proxyReq.setHeader('Referer', 'https://vue3-antd-admin.vercel.app');
           // },
         }
+      },
+      '/ws': {
+        target: 'http://localhost:15674/ws',
+        changeOrigin: true,
+        ws: true,
+        logLevel: 'debug'
       }
     }
   },
