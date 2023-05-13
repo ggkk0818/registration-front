@@ -148,7 +148,7 @@ export default {
   padding-top: 64px;
   &.is-layout {
     padding-top: 0;
-    margin: -24px;
+    margin: -24px -24px -72px;
   }
 }
 .nav-area {

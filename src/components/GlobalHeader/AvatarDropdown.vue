@@ -14,11 +14,11 @@
           <a-icon type="dashboard" />
           工作台
         </a-menu-item>
-        <a-menu-item v-if="menu && isPatient" key="doctor" @click="handleToAppointment">
+        <a-menu-item v-if="menu && isPatient" key="patient1" @click="handleToAppointment">
           <a-icon type="snippets" />
           预约挂号
         </a-menu-item>
-        <a-menu-item v-if="menu && isPatient" key="doctor" @click="handleToMy">
+        <a-menu-item v-if="menu && isPatient" key="patient2" @click="handleToMy">
           <a-icon type="user" />
           我的预约
         </a-menu-item>
