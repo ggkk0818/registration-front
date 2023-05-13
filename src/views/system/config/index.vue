@@ -9,13 +9,13 @@
         :wrapper-col="{ lg: { span: 10 }, sm: { span: 17 } }"
       >
         <a-form-model-item label="放号时间" prop="generateTime">
-          <a-time-picker v-model="formData.generateTime" placeholder="请选择时间" />
+          <a-time-picker v-model="formData.generateTime" placeholder="请选择时间" format="HH:mm" />
         </a-form-model-item>
-        <a-form-model-item label="问诊结果通知接口" prop="password">
-          <a-input v-model="formData.password" placeholder="请输入接口地址" />
+        <a-form-model-item label="问诊结果通知接口" prop="notifyApiUrl">
+          <a-input v-model="formData.notifyApiUrl" placeholder="请输入接口地址" />
         </a-form-model-item>
-        <a-form-model-item label="候诊通知接口" prop="nickName">
-          <a-input v-model="formData.nickName" placeholder="请输入接口地址" />
+        <a-form-model-item label="候诊通知接口" prop="holdApiUrl">
+          <a-input v-model="formData.holdApiUrl" placeholder="请输入接口地址" />
         </a-form-model-item>
         <a-form-model-item :wrapperCol="{ span: 24 }" style="text-align: center">
           <a-button type="primary" @click="onSubmit">提交</a-button>
@@ -27,31 +27,24 @@
 </template>
 
 <script>
-import { addUser, updateUser, getUserDetail } from '@/api/user'
+import { getConfigList, saveConfig } from '@/api/system'
+import moment from 'moment'
 const DEFAULT_VALUES = {
-  id: null,
-  name: '',
-  password: '',
-  nickName: '',
-  email: '',
-  mobile: '',
-  remark: ''
+  generateTime: null,
+  notifyApiUrl: '',
+  holdApiUrl: ''
 }
 export default {
-  name: 'UserEdit',
+  name: 'SystemConfig',
   data () {
     return {
+      moment,
       isLoading: false,
       formData: { ...DEFAULT_VALUES },
       formRules: {
         generateTime: [{ required: true, message: '请选择放号时间' }]
       },
       detailData: null
-    }
-  },
-  computed: {
-    isEdit ({ $route }) {
-      return !!$route.params.id
     }
   },
   watch: {
@@ -65,21 +58,18 @@ export default {
   methods: {
     async init () {
       this.formData = { ...DEFAULT_VALUES }
-      if (this.isEdit) {
-        this.isLoading = true
-        try {
-          const data = await getUserDetail(this.$route.params.id)
-          this.detailData = data || null
-          if (data) {
-            Object.keys(DEFAULT_VALUES).forEach((key) => {
-              if (data[key] != null) {
-                this.formData[key] = data[key]
-              }
-            })
-          }
-        } finally {
-          this.isLoading = false
-        }
+      this.isLoading = true
+      try {
+        const res = await getConfigList()
+        const config = (res || []).reduce((conf, item) => {
+          conf[item.confCode] = item.confValue
+          return conf
+        }, {})
+        this.formData.generateTime = config?.generateTime
+        this.formData.notifyApiUrl = config?.notifyApiUrl
+        this.formData.holdApiUrl = config?.holdApiUrl
+      } finally {
+        this.isLoading = false
       }
     },
     onSubmit (e) {
@@ -87,13 +77,15 @@ export default {
         if (valid) {
           this.isLoading = true
           try {
-            if (this.isEdit) {
-              await updateUser({ ...this.detailData, ...this.formData })
-            } else {
-              await addUser(this.formData)
-            }
+            const configList = Object.entries(this.formData).reduce((arr, entry) => {
+              arr.push({
+                confCode: entry[0],
+                confValue: entry[1]
+              })
+              return arr
+            }, [])
+            await saveConfig({ configList })
             this.$message.success('操作成功')
-            this.$router.back()
           } finally {
             this.isLoading = false
           }
