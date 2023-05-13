@@ -11,6 +11,7 @@ export const asyncRouterMap = [
   {
     path: '/',
     name: 'index',
+    redirect: '/dashboard/workplace',
     component: BasicLayout,
     meta: { title: 'menu.home', permission: ['dashboard'] },
     children: [
@@ -22,12 +23,12 @@ export const asyncRouterMap = [
         component: RouteView,
         meta: { title: 'menu.dashboard', keepAlive: true, icon: bxAnaalyse, permission: ['dashboard'] },
         children: [
-          {
-            path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
-            name: 'Analysis',
-            component: () => import('@/views/dashboard/Analysis'),
-            meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
-          },
+          // {
+          //   path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
+          //   name: 'Analysis',
+          //   component: () => import('@/views/dashboard/Analysis'),
+          //   meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
+          // },
           // 外部链接
           // {
           //   path: 'https://www.baidu.com/',
@@ -596,9 +597,11 @@ export const asyncRouterMap = [
       */
     ]
   },
+  // 患者菜单
   {
     path: '/',
     name: 'patientAppointment',
+    redirect: '/dashboard',
     component: PatientLayout,
     meta: { title: '预约', permission: ['patientAppointment'] },
     children: [{
@@ -630,6 +633,7 @@ export const asyncRouterMap = [
       hidden: true
     }]
   },
+  // 医生菜单
   {
     path: '/',
     name: 'doctorAppointment',

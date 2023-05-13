@@ -6,23 +6,23 @@
           <a-avatar size="large" :src="currentUser.avatar" />
         </div>
         <div class="content">
-          <div class="content-title">
-            {{ timeFix }}，{{ user.name }}<span class="welcome-text">，{{ welcome }}</span>
-          </div>
-          <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
+          <div class="content-title">{{ timeFix }}，{{ currentUser.nickName }}</div>
         </div>
       </div>
     </template>
     <template v-slot:extraContent>
       <div class="extra-content">
         <div class="stat-item">
-          <a-statistic title="项目数" :value="56" />
+          <a-statistic title="今日预约" :value="summaryData.appointmentCount" />
         </div>
         <div class="stat-item">
-          <a-statistic title="团队内排名" :value="8" suffix="/ 24" />
+          <a-statistic title="部门数" :value="summaryData.departmentCount" />
         </div>
         <div class="stat-item">
-          <a-statistic title="项目访问" :value="2223" />
+          <a-statistic title="医生数" :value="summaryData.doctorCount" />
+        </div>
+        <div class="stat-item">
+          <a-statistic title="患者数" :value="summaryData.patientCount" />
         </div>
       </div>
     </template>
@@ -33,50 +33,53 @@
           <a-card
             class="project-list"
             :loading="loading"
-            style="margin-bottom: 24px;"
+            style="margin-bottom: 24px"
             :bordered="false"
-            title="进行中的项目"
+            title="最新预约"
             :body-style="{ padding: 0 }"
           >
-            <a slot="extra">全部项目</a>
-            <div>
-              <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projects">
+            <a slot="extra" @click="goPath('/appointment')">全部预约</a>
+            <div v-if="appointmentList.length > 0">
+              <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in appointmentList">
                 <a-card :bordered="false" :body-style="{ padding: 0 }">
                   <a-card-meta>
                     <div slot="title" class="card-title">
-                      <a-avatar size="small" :src="item.cover" />
-                      <a>{{ item.title }}</a>
+                      <a-avatar size="small" :src="PeopleImg" />
+                      <a>{{ item.patientName }}</a>
+                      <div class="title-right">
+                        <a @click="handleView(item)">查看</a>
+                        <a-divider type="vertical" />
+                        <a @click="handleDel(item)">取消</a>
+                      </div>
                     </div>
                     <div slot="description" class="card-description">
-                      {{ item.description }}
+                      {{ item.diagnoseResult }}
                     </div>
                   </a-card-meta>
                   <div class="project-item">
-                    <a href="/#/">科学搬砖组</a>
-                    <span class="datetime">9小时前</span>
+                    <a-badge :status="item.status | statusTypeFilter" :text="item.status | statusFilter" />
+                    <span class="datetime">{{ formatDate(item.updateTime) }}</span>
                   </div>
                 </a-card>
               </a-card-grid>
             </div>
+            <div v-else class="msg-box">暂无数据</div>
           </a-card>
 
-          <a-card :loading="loading" title="动态" :bordered="false">
+          <!-- <a-card :loading="loading" title="今日预约" :bordered="false">
             <a-list>
-              <a-list-item :key="index" v-for="(item, index) in activities">
+              <a-list-item :key="index" v-for="(item, index) in appointmentList">
                 <a-list-item-meta>
-                  <a-avatar slot="avatar" size="small" :src="item.user.avatar" />
+                  <a-avatar slot="avatar" size="small" :src="item.avatar" />
                   <div slot="title">
-                    <span>{{ item.user.nickname }}</span
-                    >&nbsp; 在&nbsp;<a href="#">{{ item.project.name }}</a
-                    >&nbsp; <span>{{ item.project.action }}</span
-                    >&nbsp;
-                    <a href="#">{{ item.project.event }}</a>
+                    <span>{{ item.patientName }}</span
+                    >&nbsp; <a-badge :status="item.status | statusTypeFilter" :text="item.status | statusFilter" />
                   </div>
-                  <div slot="description">{{ item.time }}</div>
+                  <div slot="description">{{ item.updateTime }}</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
-          </a-card>
+          </a-card> -->
         </a-col>
         <a-col
           style="padding: 0 12px"
@@ -85,44 +88,16 @@
           :md="24"
           :sm="24"
           :xs="24">
-          <a-card
-            title="快速开始 / 便捷导航"
-            style="margin-bottom: 24px"
-            :bordered="false"
-            :body-style="{ padding: 0 }"
-          >
+          <a-card title="便捷导航" style="margin-bottom: 24px" :bordered="false" :body-style="{ padding: 0 }">
             <div class="item-group">
-              <a>操作一</a>
-              <a>操作二</a>
-              <a>操作三</a>
-              <a>操作四</a>
-              <a>操作五</a>
-              <a>操作六</a>
-              <a-button size="small" type="primary" ghost icon="plus">添加</a-button>
-            </div>
-          </a-card>
-          <a-card
-            title="XX 指数"
-            style="margin-bottom: 24px"
-            :loading="radarLoading"
-            :bordered="false"
-            :body-style="{ padding: 0 }"
-          >
-            <div style="min-height: 400px;">
-              <!-- :scale="scale" :axis1Opts="axis1Opts" :axis2Opts="axis2Opts"  -->
-              <radar :data="radarData" />
-            </div>
-          </a-card>
-          <a-card :loading="loading" title="团队" :bordered="false">
-            <div class="members">
-              <a-row>
-                <a-col :span="12" v-for="(item, index) in teams" :key="index">
-                  <a>
-                    <a-avatar size="small" :src="item.avatar" />
-                    <span class="member">{{ item.name }}</span>
-                  </a>
-                </a-col>
-              </a-row>
+              <a @click="goPath('/appointment')">预约管理</a>
+              <a @click="goPath('/department')">科室管理</a>
+              <a @click="goPath('/doctor')">医生管理</a>
+              <a @click="goPath('/patient')">患者管理</a>
+              <a @click="goPath('/announcement')">公告管理</a>
+              <a @click="goPath('/statistic/department')">报表统计</a>
+              <a @click="goPath('/system/user')">用户管理</a>
+              <a @click="goPath('/system/config')">系统配置</a>
             </div>
           </a-card>
         </a-col>
@@ -133,14 +108,14 @@
 
 <script>
 import { timeFix } from '@/utils/util'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import { Radar } from '@/components'
-
-import { getRoleList, getServiceList } from '@/api/manage'
-
-const DataSet = require('@antv/data-set')
-
+import { getStatisticList } from '@/api/statistic'
+import { getAppointmentList, delAppointment } from '@/api/appointment'
+import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
+import PeopleImg from '@/assets/people.png'
+import moment from 'moment'
 export default {
   name: 'Workplace',
   components: {
@@ -149,65 +124,21 @@ export default {
   },
   data () {
     return {
+      PeopleImg,
+      APPOINTMENT_STATUS,
+      loading: false,
       timeFix: timeFix(),
       avatar: '',
-      user: {},
-
-      projects: [],
-      loading: true,
-      radarLoading: true,
-      activities: [],
-      teams: [],
-
-      // data
-      axis1Opts: {
-        dataKey: 'item',
-        line: null,
-        tickLine: null,
-        grid: {
-          lineStyle: {
-            lineDash: null
-          },
-          hideFirstLine: false
-        }
-      },
-      axis2Opts: {
-        dataKey: 'score',
-        line: null,
-        tickLine: null,
-        grid: {
-          type: 'polygon',
-          lineStyle: {
-            lineDash: null
-          }
-        }
-      },
-      scale: [
-        {
-          dataKey: 'score',
-          min: 0,
-          max: 80
-        }
-      ],
-      axisData: [
-        { item: '引用', a: 70, b: 30, c: 40 },
-        { item: '口碑', a: 60, b: 70, c: 40 },
-        { item: '产量', a: 50, b: 60, c: 40 },
-        { item: '贡献', a: 40, b: 50, c: 40 },
-        { item: '热度', a: 60, b: 70, c: 40 },
-        { item: '引用', a: 70, b: 50, c: 40 }
-      ],
-      radarData: []
+      appointmentList: [],
+      summaryData: {}
     }
   },
   computed: {
-    ...mapState({
-      nickname: state => state.user.nickname,
-      welcome: state => state.user.welcome
-    }),
-    currentUser () {
+    ...mapGetters(['userInfo']),
+    currentUser ({ userInfo }) {
       return {
-        name: 'Serati Ma',
+        name: userInfo?.name,
+        nickName: userInfo?.nickName,
         avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
       }
     },
@@ -216,55 +147,53 @@ export default {
     }
   },
   created () {
-    this.user = this.userInfo
-    this.avatar = this.userInfo.avatar
-
-    getRoleList().then(res => {
-      // console.log('workplace -> call getRoleList()', res)
-    })
-
-    getServiceList().then(res => {
-      // console.log('workplace -> call getServiceList()', res)
-    })
-  },
-  mounted () {
-    this.getProjects()
-    this.getActivity()
-    this.getTeams()
-    this.initRadar()
+    this.getAppointment()
+    this.getSummary()
   },
   methods: {
-    getProjects () {
-      this.$http.get('/list/search/projects').then(res => {
-        this.projects = res.result && res.result.data
+    async getAppointment () {
+      try {
+        this.loading = true
+        const res = await getAppointmentList({ pageSize: 9 })
+        this.appointmentList = res?.records || []
+      } finally {
         this.loading = false
-      })
+      }
     },
-    getActivity () {
-      this.$http.get('/workplace/activity').then(res => {
-        this.activities = res.result
-      })
+    async getSummary () {
+      const res = await getStatisticList({ date: moment().format('YYYY-MM-DD') })
+      this.summaryData = res || {}
     },
-    getTeams () {
-      this.$http.get('/workplace/teams').then(res => {
-        this.teams = res.result
-      })
+    goPath (path) {
+      if (path) {
+        this.$router.push(path)
+      }
     },
-    initRadar () {
-      this.radarLoading = true
-
-      this.$http.get('/workplace/radar').then(res => {
-        const dv = new DataSet.View().source(res.result)
-        dv.transform({
-          type: 'fold',
-          fields: ['个人', '团队', '部门'],
-          key: 'user',
-          value: 'score'
-        })
-
-        this.radarData = dv.rows
-        this.radarLoading = false
+    formatDate (date) {
+      return date ? moment(date).fromNow() : ''
+    },
+    handleView (record) {
+      this.$router.push({ path: `/appointment/detail/${record.id}` })
+    },
+    handleDel (record) {
+      this.$confirm({
+        title: '提示',
+        content: '是否确认取消？',
+        onOk: () => {
+          delAppointment(record.id).then(() => {
+            this.$message.success('操作成功')
+            this.$refs.table.refresh()
+          })
+        }
       })
+    }
+  },
+  filters: {
+    statusFilter (type) {
+      return APPOINTMENT_STATUS_MAP[type].text
+    },
+    statusTypeFilter (type) {
+      return APPOINTMENT_STATUS_MAP[type].status
     }
   }
 }
@@ -275,8 +204,9 @@ export default {
 
 .project-list {
   .card-title {
+    display: flex;
+    align-items: center;
     font-size: 0;
-
     a {
       color: rgba(0, 0, 0, 0.85);
       margin-left: 12px;
@@ -288,6 +218,17 @@ export default {
 
       &:hover {
         color: #1890ff;
+      }
+    }
+    .title-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      a {
+        height: auto;
+        margin-left: 0;
+        line-height: 1;
       }
     }
   }
@@ -306,7 +247,9 @@ export default {
     font-size: 12px;
     height: 20px;
     line-height: 20px;
-
+    .ant-badge {
+      flex: 1 1 0;
+    }
     a {
       color: rgba(0, 0, 0, 0.45);
       display: inline-block;
@@ -329,6 +272,14 @@ export default {
     height: 44px;
     line-height: 22px;
     overflow: hidden;
+  }
+
+  .msg-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: rgba(0, 0, 0, 0.45);
   }
 }
 

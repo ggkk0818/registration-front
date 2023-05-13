@@ -1,420 +1,341 @@
 <template>
-  <div>
-    <a-row :gutter="24">
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" :title="$t('dashboard.analysis.total-sales')" total="￥126,560">
-          <a-tooltip :title="$t('dashboard.analysis.introduce')" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">{{ $t('dashboard.analysis.week') }}</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">{{ $t('dashboard.analysis.day') }}</span>
-              11%
-            </trend>
-          </div>
-          <template slot="footer">{{ $t('dashboard.analysis.day-sales') }}<span>￥ 234.56</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" :title="$t('dashboard.analysis.visits')" :total="8846 | NumberFormat">
-          <a-tooltip :title="$t('dashboard.analysis.introduce')" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-area />
-          </div>
-          <template slot="footer">{{ $t('dashboard.analysis.day-visits') }}<span> {{ '1234' | NumberFormat }}</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" :title="$t('dashboard.analysis.payments')" :total="6560 | NumberFormat">
-          <a-tooltip :title="$t('dashboard.analysis.introduce')" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-bar />
-          </div>
-          <template slot="footer">{{ $t('dashboard.analysis.conversion-rate') }} <span>60%</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" :title="$t('dashboard.analysis.operational-effect')" total="78%">
-          <a-tooltip :title="$t('dashboard.analysis.introduce')" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" height="8px" />
-          </div>
-          <template slot="footer">
-            <trend flag="down" style="margin-right: 16px;">
-              <span slot="term">{{ $t('dashboard.analysis.week') }}</span>
-              12%
-            </trend>
-            <trend flag="up">
-              <span slot="term">{{ $t('dashboard.analysis.day') }}</span>
-              80%
-            </trend>
-          </template>
-        </chart-card>
-      </a-col>
-    </a-row>
-
-    <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
-      <div class="salesCard">
-        <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
-          <div class="extra-wrapper" slot="tabBarExtraContent">
-            <div class="extra-item">
-              <a>{{ $t('dashboard.analysis.all-day') }}</a>
-              <a>{{ $t('dashboard.analysis.all-week') }}</a>
-              <a>{{ $t('dashboard.analysis.all-month') }}</a>
-              <a>{{ $t('dashboard.analysis.all-year') }}</a>
-            </div>
-            <a-range-picker :style="{width: '256px'}" />
-          </div>
-          <a-tab-pane loading="true" :tab="$t('dashboard.analysis.sales')" key="1">
-            <a-row>
-              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar :data="barData" :title="$t('dashboard.analysis.sales-trend')" />
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list :title="$t('dashboard.analysis.sales-ranking')" :list="rankList"/>
-              </a-col>
-            </a-row>
-          </a-tab-pane>
-          <a-tab-pane :tab="$t('dashboard.analysis.visits')" key="2">
-            <a-row>
-              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar :data="barData2" :title="$t('dashboard.analysis.visits-trend')" />
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list :title="$t('dashboard.analysis.visits-ranking')" :list="rankList"/>
-              </a-col>
-            </a-row>
-          </a-tab-pane>
-        </a-tabs>
+  <page-header-wrapper>
+    <template v-slot:content>
+      <div class="page-header-content">
+        <div class="avatar">
+          <a-avatar size="large" :src="currentUser.avatar" />
+        </div>
+        <div class="content">
+          <div class="content-title">{{ timeFix }}，{{ currentUser.nickName }}</div>
+        </div>
       </div>
-    </a-card>
+    </template>
+    <template v-slot:extraContent>
+      <div class="extra-content">
+        <div class="stat-item">
+          <a-statistic title="部门数" :value="summaryData.departmentCount" />
+        </div>
+        <div class="stat-item">
+          <a-statistic title="医生数" :value="summaryData.doctorCount" />
+        </div>
+        <div class="stat-item">
+          <a-statistic title="患者数" :value="summaryData.patientCount" />
+        </div>
+        <div class="stat-item">
+          <a-statistic title="今日预约" :value="summaryData.appointmentCount" />
+        </div>
+      </div>
+    </template>
 
-    <div class="antd-pro-pages-dashboard-analysis-twoColLayout" :class="!isMobile && 'desktop'">
-      <a-row :gutter="24" type="flex" :style="{ marginTop: '24px' }">
-        <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card :loading="loading" :bordered="false" :title="$t('dashboard.analysis.online-top-search')" :style="{ height: '100%' }">
-            <a-dropdown :trigger="['click']" placement="bottomLeft" slot="extra">
-              <a class="ant-dropdown-link" href="#">
-                <a-icon type="ellipsis" />
-              </a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a href="javascript:;">{{ $t('dashboard.analysis.dropdown-option-one') }}</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">{{ $t('dashboard.analysis.dropdown-option-two') }}</a>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
-            <a-row :gutter="68">
-              <a-col :xs="24" :sm="12" :style="{ marginBottom: ' 24px'}">
-                <number-info :total="12321" :sub-total="17.1">
-                  <span slot="subtitle">
-                    <span>{{ $t('dashboard.analysis.search-users') }}</span>
-                    <a-tooltip :title="$t('dashboard.analysis.introduce')" slot="action">
-                      <a-icon type="info-circle-o" :style="{ marginLeft: '8px' }" />
-                    </a-tooltip>
-                  </span>
-                </number-info>
-                <!-- miniChart -->
-                <div>
-                  <mini-smooth-area :style="{ height: '45px' }" :dataSource="searchUserData" :scale="searchUserScale" />
-                </div>
-              </a-col>
-              <a-col :xs="24" :sm="12" :style="{ marginBottom: ' 24px'}">
-                <number-info :total="2.7" :sub-total="26.2" status="down">
-                  <span slot="subtitle">
-                    <span>{{ $t('dashboard.analysis.per-capita-search') }}</span>
-                    <a-tooltip :title="$t('dashboard.analysis.introduce')" slot="action">
-                      <a-icon type="info-circle-o" :style="{ marginLeft: '8px' }" />
-                    </a-tooltip>
-                  </span>
-                </number-info>
-                <!-- miniChart -->
-                <div>
-                  <mini-smooth-area :style="{ height: '45px' }" :dataSource="searchUserData" :scale="searchUserScale" />
-                </div>
-              </a-col>
-            </a-row>
-            <div class="ant-table-wrapper">
-              <a-table
-                row-key="index"
-                size="small"
-                :columns="searchTableColumns"
-                :dataSource="searchData"
-                :pagination="{ pageSize: 5 }"
-              >
-                <span slot="range" slot-scope="text, record">
-                  <trend :flag="record.status === 0 ? 'up' : 'down'">
-                    {{ text }}%
-                  </trend>
-                </span>
-              </a-table>
+    <div>
+      <a-row :gutter="24">
+        <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
+          <a-card
+            class="project-list"
+            :loading="loading"
+            style="margin-bottom: 24px"
+            :bordered="false"
+            title="今日预约"
+            :body-style="{ padding: 0 }"
+          >
+            <a slot="extra" @click="goAppointment()">全部预约</a>
+            <div v-if="appointmentList.length > 0">
+              <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in appointmentList">
+                <a-card :bordered="false" :body-style="{ padding: 0 }">
+                  <a-card-meta>
+                    <div slot="title" class="card-title">
+                      <a-avatar size="small" :src="PeopleImg" />
+                      <a>{{ item.patientName }}</a>
+                      <div class="title-right">
+                        <template v-if="item.status === APPOINTMENT_STATUS.DIAGNOSE_HOLD">
+                          <a @click="handleEdit(item)">诊断</a>
+                          <a-divider type="vertical" />
+                        </template>
+                        <a @click="handleView(item)">查看</a>
+                        <a-divider type="vertical" />
+                        <a @click="handleDel(item)">取消</a>
+                      </div>
+                    </div>
+                    <div slot="description" class="card-description">
+                      {{ item.diagnoseResult }}
+                    </div>
+                  </a-card-meta>
+                  <div class="project-item">
+                    <a-badge :status="item.status | statusTypeFilter" :text="item.status | statusFilter" />
+                    <span class="datetime">{{ formatDate(item.updateTime) }}</span>
+                  </div>
+                </a-card>
+              </a-card-grid>
             </div>
+            <div v-else class="msg-box">暂无数据</div>
           </a-card>
+
+          <!-- <a-card :loading="loading" title="今日预约" :bordered="false">
+            <a-list>
+              <a-list-item :key="index" v-for="(item, index) in appointmentList">
+                <a-list-item-meta>
+                  <a-avatar slot="avatar" size="small" :src="item.avatar" />
+                  <div slot="title">
+                    <span>{{ item.patientName }}</span
+                    >&nbsp; <a-badge :status="item.status | statusTypeFilter" :text="item.status | statusFilter" />
+                  </div>
+                  <div slot="description">{{ item.updateTime }}</div>
+                </a-list-item-meta>
+              </a-list-item>
+            </a-list>
+          </a-card> -->
         </a-col>
-        <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card class="antd-pro-pages-dashboard-analysis-salesCard" :loading="loading" :bordered="false" :title="$t('dashboard.analysis.the-proportion-of-sales')" :style="{ height: '100%' }">
-            <div slot="extra" style="height: inherit;">
-              <!-- style="bottom: 12px;display: inline-block;" -->
-              <span class="dashboard-analysis-iconGroup">
-                <a-dropdown :trigger="['click']" placement="bottomLeft">
-                  <a-icon type="ellipsis" class="ant-dropdown-link" />
-                  <a-menu slot="overlay">
-                    <a-menu-item>
-                      <a href="javascript:;">{{ $t('dashboard.analysis.dropdown-option-one') }}</a>
-                    </a-menu-item>
-                    <a-menu-item>
-                      <a href="javascript:;">{{ $t('dashboard.analysis.dropdown-option-two') }}</a>
-                    </a-menu-item>
-                  </a-menu>
-                </a-dropdown>
-              </span>
-              <div class="analysis-salesTypeRadio">
-                <a-radio-group defaultValue="a">
-                  <a-radio-button value="a">{{ $t('dashboard.analysis.channel.all') }}</a-radio-button>
-                  <a-radio-button value="b">{{ $t('dashboard.analysis.channel.online') }}</a-radio-button>
-                  <a-radio-button value="c">{{ $t('dashboard.analysis.channel.stores') }}</a-radio-button>
-                </a-radio-group>
-              </div>
-
-            </div>
-            <h4>{{ $t('dashboard.analysis.sales') }}</h4>
-            <div>
-              <!-- style="width: calc(100% - 240px);" -->
-              <div>
-                <v-chart :force-fit="true" :height="405" :data="pieData" :scale="pieScale">
-                  <v-tooltip :showTitle="false" dataKey="item*percent" />
-                  <v-axis />
-                  <!-- position="right" :offsetX="-140" -->
-                  <v-legend dataKey="item"/>
-                  <v-pie position="percent" color="item" :vStyle="pieStyle" />
-                  <v-coord type="theta" :radius="0.75" :innerRadius="0.6" />
-                </v-chart>
-              </div>
-
+        <a-col
+          style="padding: 0 12px"
+          :xl="8"
+          :lg="24"
+          :md="24"
+          :sm="24"
+          :xs="24">
+          <a-card title="便捷导航" style="margin-bottom: 24px" :bordered="false" :body-style="{ padding: 0 }">
+            <div class="item-group">
+              <a @click="goAppointment()">去诊断</a>
             </div>
           </a-card>
         </a-col>
       </a-row>
     </div>
-  </div>
+  </page-header-wrapper>
 </template>
 
 <script>
+import { timeFix } from '@/utils/util'
+import { mapGetters } from 'vuex'
+import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
+import { Radar } from '@/components'
+import { getStatisticList } from '@/api/statistic'
+import { getDoctorAppointmentList, delAppointment } from '@/api/appointment'
+import { APPOINTMENT_STATUS, APPOINTMENT_STATUS_MAP } from '@/utils/consts'
+import PeopleImg from '@/assets/people.png'
 import moment from 'moment'
-import {
-  ChartCard,
-  MiniArea,
-  MiniBar,
-  MiniProgress,
-  RankList,
-  Bar,
-  Trend,
-  NumberInfo,
-  MiniSmoothArea
-} from '@/components'
-import { baseMixin } from '@/store/app-mixin'
-
-const barData = []
-const barData2 = []
-for (let i = 0; i < 12; i += 1) {
-  barData.push({
-    x: `${i + 1}月`,
-    y: Math.floor(Math.random() * 1000) + 200
-  })
-  barData2.push({
-    x: `${i + 1}月`,
-    y: Math.floor(Math.random() * 1000) + 200
-  })
-}
-
-const rankList = []
-for (let i = 0; i < 7; i++) {
-  rankList.push({
-    name: '白鹭岛 ' + (i + 1) + ' 号店',
-    total: 1234.56 - i * 100
-  })
-}
-
-const searchUserData = []
-for (let i = 0; i < 7; i++) {
-  searchUserData.push({
-    x: moment().add(i, 'days').format('YYYY-MM-DD'),
-    y: Math.ceil(Math.random() * 10)
-  })
-}
-const searchUserScale = [
-  {
-    dataKey: 'x',
-    alias: '时间'
-  },
-  {
-    dataKey: 'y',
-    alias: '用户数',
-    min: 0,
-    max: 10
-  }]
-
-const searchData = []
-for (let i = 0; i < 50; i += 1) {
-  searchData.push({
-    index: i + 1,
-    keyword: `搜索关键词-${i}`,
-    count: Math.floor(Math.random() * 1000),
-    range: Math.floor(Math.random() * 100),
-    status: Math.floor((Math.random() * 10) % 2)
-  })
-}
-
-const DataSet = require('@antv/data-set')
-
-const sourceData = [
-  { item: '家用电器', count: 32.2 },
-  { item: '食用酒水', count: 21 },
-  { item: '个护健康', count: 17 },
-  { item: '服饰箱包', count: 13 },
-  { item: '母婴产品', count: 9 },
-  { item: '其他', count: 7.8 }
-]
-
-const pieScale = [{
-  dataKey: 'percent',
-  min: 0,
-  formatter: '.0%'
-}]
-
-const dv = new DataSet.View().source(sourceData)
-dv.transform({
-  type: 'percent',
-  field: 'count',
-  dimension: 'item',
-  as: 'percent'
-})
-const pieData = dv.rows
-
 export default {
-  name: 'Analysis',
-  mixins: [baseMixin],
+  name: 'Workplace',
   components: {
-    ChartCard,
-    MiniArea,
-    MiniBar,
-    MiniProgress,
-    RankList,
-    Bar,
-    Trend,
-    NumberInfo,
-    MiniSmoothArea
+    PageHeaderWrapper,
+    Radar
   },
   data () {
     return {
-      loading: true,
-      rankList,
-
-      // 搜索用户数
-      searchUserData,
-      searchUserScale,
-      searchData,
-
-      barData,
-      barData2,
-
-      //
-      pieScale,
-      pieData,
-      sourceData,
-      pieStyle: {
-        stroke: '#fff',
-        lineWidth: 1
-      }
+      PeopleImg,
+      APPOINTMENT_STATUS,
+      loading: false,
+      timeFix: timeFix(),
+      avatar: '',
+      appointmentList: [],
+      summaryData: {}
     }
   },
   computed: {
-    searchTableColumns () {
-        return [
-      {
-        dataIndex: 'index',
-        title: this.$t('dashboard.analysis.table.rank'),
-        width: 90
-      },
-      {
-        dataIndex: 'keyword',
-        title: this.$t('dashboard.analysis.table.search-keyword')
-      },
-      {
-        dataIndex: 'count',
-        title: this.$t('dashboard.analysis.table.users')
-      },
-      {
-        dataIndex: 'range',
-        title: this.$t('dashboard.analysis.table.weekly-range'),
-        align: 'right',
-        sorter: (a, b) => a.range - b.range,
-        scopedSlots: { customRender: 'range' }
+    ...mapGetters(['userInfo']),
+    currentUser ({ userInfo }) {
+      return {
+        name: userInfo?.name,
+        nickName: userInfo?.nickName,
+        deptName: userInfo?.deptName,
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
       }
-      ]
+    },
+    userInfo () {
+      return this.$store.getters.userInfo
     }
   },
   created () {
-    setTimeout(() => {
-      this.loading = !this.loading
-    }, 1000)
+    this.getAppointment()
+    this.getSummary()
+  },
+  methods: {
+    async getAppointment () {
+      try {
+        this.loading = true
+        const res = await getDoctorAppointmentList({ diagnoseTime: moment().format('YYYY-MM-DD') })
+        this.appointmentList = res?.records || []
+      } finally {
+        this.loading = false
+      }
+    },
+    async getSummary () {
+      const res = await getStatisticList({ date: moment().format('YYYY-MM-DD') })
+      this.summaryData = res || {}
+    },
+    goAppointment () {
+      this.$router.push('/doctor-appointment/list')
+    },
+    formatDate (date) {
+      return date ? moment(date).fromNow() : ''
+    },
+    handleEdit (record) {
+      this.$router.push({ path: `/doctor-appointment/list/diagnose/${record.id}` })
+    },
+    handleView (record) {
+      this.$router.push({ path: `/doctor-appointment/list/detail/${record.id}` })
+    },
+    handleDel (record) {
+      this.$confirm({
+        title: '提示',
+        content: '是否确认取消？',
+        onOk: () => {
+          delAppointment(record.id).then(() => {
+            this.$message.success('操作成功')
+            this.$refs.table.refresh()
+          })
+        }
+      })
+    }
+  },
+  filters: {
+    statusFilter (type) {
+      return APPOINTMENT_STATUS_MAP[type].text
+    },
+    statusTypeFilter (type) {
+      return APPOINTMENT_STATUS_MAP[type].status
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .extra-wrapper {
-    line-height: 55px;
-    padding-right: 24px;
+@import './Workplace.less';
 
-    .extra-item {
+.project-list {
+  .card-title {
+    display: flex;
+    align-items: center;
+    font-size: 0;
+    a {
+      color: rgba(0, 0, 0, 0.85);
+      margin-left: 12px;
+      line-height: 24px;
+      height: 24px;
       display: inline-block;
-      margin-right: 24px;
+      vertical-align: top;
+      font-size: 14px;
 
+      &:hover {
+        color: #1890ff;
+      }
+    }
+    .title-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       a {
-        margin-left: 24px;
+        height: auto;
+        margin-left: 0;
+        line-height: 1;
       }
     }
   }
 
-  .antd-pro-pages-dashboard-analysis-twoColLayout {
-    position: relative;
+  .card-description {
+    color: rgba(0, 0, 0, 0.45);
+    height: 44px;
+    line-height: 22px;
+    overflow: hidden;
+  }
+
+  .project-item {
     display: flex;
+    margin-top: 8px;
+    overflow: hidden;
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
+    .ant-badge {
+      flex: 1 1 0;
+    }
+    a {
+      color: rgba(0, 0, 0, 0.45);
+      display: inline-block;
+      flex: 1 1 0;
+
+      &:hover {
+        color: #1890ff;
+      }
+    }
+
+    .datetime {
+      color: rgba(0, 0, 0, 0.25);
+      flex: 0 0 auto;
+      float: right;
+    }
+  }
+
+  .ant-card-meta-description {
+    color: rgba(0, 0, 0, 0.45);
+    height: 44px;
+    line-height: 22px;
+    overflow: hidden;
+  }
+
+  .msg-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.item-group {
+  padding: 20px 0 8px 24px;
+  font-size: 0;
+
+  a {
+    color: rgba(0, 0, 0, 0.65);
+    display: inline-block;
+    font-size: 14px;
+    margin-bottom: 13px;
+    width: 25%;
+  }
+}
+
+.members {
+  a {
     display: block;
-    flex-flow: row wrap;
-  }
+    margin: 12px 0;
+    line-height: 24px;
+    height: 24px;
 
-  .antd-pro-pages-dashboard-analysis-salesCard {
-    height: calc(100% - 24px);
-    /deep/ .ant-card-head {
-      position: relative;
+    .member {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 24px;
+      max-width: 100px;
+      vertical-align: top;
+      margin-left: 12px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+
+    &:hover {
+      span {
+        color: #1890ff;
+      }
+    }
+  }
+}
+
+.mobile {
+  .project-list {
+    .project-card-grid {
+      width: 100%;
     }
   }
 
-  .dashboard-analysis-iconGroup {
-    i {
-      margin-left: 16px;
-      color: rgba(0,0,0,.45);
-      cursor: pointer;
-      transition: color .32s;
-      color: black;
-    }
+  .more-info {
+    border: 0;
+    padding-top: 16px;
+    margin: 16px 0 16px;
   }
-  .analysis-salesTypeRadio {
-    position: absolute;
-    right: 54px;
-    bottom: 12px;
+
+  .headerContent .title .welcome-text {
+    display: none;
   }
+}
 </style>

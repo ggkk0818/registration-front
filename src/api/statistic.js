@@ -7,7 +7,7 @@ const url = 'statistic'
  */
 export function getStatisticList (params) {
   return request({
-    url: `${url}`,
+    url: `${url}/summary`,
     method: 'get',
     params: params
   })

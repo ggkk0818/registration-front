@@ -6,13 +6,21 @@
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
-        <a-menu-item v-if="menu" key="center" @click="handleToCenter">
-          <a-icon type="user" />
-          {{ $t('menu.account.center') }}
+        <a-menu-item v-if="menu && isAdmin" key="center" @click="handleToCenter">
+          <a-icon type="dashboard" />
+          工作台
         </a-menu-item>
-        <a-menu-item v-if="menu" key="settings" @click="handleToSettings">
-          <a-icon type="setting" />
-          {{ $t('menu.account.settings') }}
+        <a-menu-item v-if="menu && isDoctor" key="doctor" @click="handleToCenterDoctor">
+          <a-icon type="dashboard" />
+          工作台
+        </a-menu-item>
+        <a-menu-item v-if="menu && isPatient" key="doctor" @click="handleToAppointment">
+          <a-icon type="snippets" />
+          预约挂号
+        </a-menu-item>
+        <a-menu-item v-if="menu && isPatient" key="doctor" @click="handleToMy">
+          <a-icon type="user" />
+          我的预约
         </a-menu-item>
         <a-menu-divider v-if="menu" />
         <a-menu-item key="logout" @click="handleLogout">
@@ -30,6 +38,7 @@
 <script>
 import { Modal } from 'ant-design-vue'
 import router, { resetRouter } from '@/router'
+import { USER_ROLE } from '@/utils/consts'
 
 export default {
   name: 'AvatarDropdown',
@@ -43,12 +52,29 @@ export default {
       default: true
     }
   },
+  computed: {
+    isAdmin () {
+      return this.currentUser?.roleId === USER_ROLE.ADMIN
+    },
+    isDoctor () {
+      return this.currentUser?.roleId === USER_ROLE.DOCTOR
+    },
+    isPatient () {
+      return this.currentUser?.roleId === USER_ROLE.PATIENT
+    }
+  },
   methods: {
     handleToCenter () {
-      this.$router.push({ path: '/account/center' })
+      this.$router.push({ path: '/dashboard/workplace' })
     },
-    handleToSettings () {
-      this.$router.push({ path: '/account/settings' })
+    handleToCenterDoctor () {
+      this.$router.push({ path: '/dashboard' })
+    },
+    handleToAppointment () {
+      this.$router.push({ path: '/patient-appointment/doctor' })
+    },
+    handleToMy () {
+      this.$router.push({ path: '/patient-appointment/list' })
     },
     handleLogout (e) {
       Modal.confirm({
