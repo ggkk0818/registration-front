@@ -38,6 +38,9 @@
       </template>
       <a-empty v-else />
     </a-card>
+    <div class="btns">
+      <a-button type="primary" :disabled="isLoadingSubmit" @click="back">返回</a-button>
+    </div>
     <van-action-sheet
       v-model="actionSheetVisible"
       :actions="actions"
@@ -142,6 +145,10 @@ export default {
         .finally(() => {
           this.isLoadingSubmit = true
         })
+    },
+    // 返回
+    back () {
+      this.$router.back()
     }
   },
   filters: {
@@ -191,5 +198,10 @@ export default {
 }
 .result {
   padding: 20px;
+}
+.btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 </style>

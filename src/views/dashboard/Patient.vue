@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container" :class="{'is-layout': isLayout}">
+  <div class="page-container" :class="{ 'is-layout': isLayout }">
     <!-- 导航栏 -->
     <div class="nav-area">
       <div class="navbar">
@@ -16,6 +16,8 @@
         </div>
       </div>
     </div>
+    <!-- 系统公告 -->
+    <van-notice-bar v-if="announcementText" left-icon="volume-o" :text="announcementText" />
     <section class="section-poster">
       <img src="@/assets/portal/poster.webp" />
       <div class="page-width">
@@ -31,31 +33,31 @@
         <div class="image-container">
           <img src="@/assets/portal/C1_1.webp" />
         </div>
-        <div class="text-container">Baby Care</div>
+        <div class="text-container">合理休息</div>
       </div>
       <div class="carousel-item">
         <div class="image-container">
           <img src="@/assets/portal/C1_2.webp" />
         </div>
-        <div class="text-container">Baby Care</div>
+        <div class="text-container">勤洗手</div>
       </div>
       <div class="carousel-item">
         <div class="image-container">
           <img src="@/assets/portal/C1_3.webp" />
         </div>
-        <div class="text-container">Baby Care</div>
+        <div class="text-container">加强锻炼</div>
       </div>
       <div class="carousel-item">
         <div class="image-container">
           <img src="@/assets/portal/C1_4.webp" />
         </div>
-        <div class="text-container">Baby Care</div>
+        <div class="text-container">常通风</div>
       </div>
       <div class="carousel-item">
         <div class="image-container">
           <img src="@/assets/portal/C1_5.webp" />
         </div>
-        <div class="text-container">Baby Care</div>
+        <div class="text-container">保证营养</div>
       </div>
     </section>
     <section class="section-feature">
@@ -110,10 +112,17 @@
 import LogoSvg from '@/assets/logo.svg?inline'
 import AvatarDropdown from '@/components/GlobalHeader/AvatarDropdown'
 import { mapGetters } from 'vuex'
+import { getPublicAnnouncementList } from '@/api/system'
+import { ANNOUNCEMENT_TYPE } from '@/utils/consts'
 export default {
   components: {
     LogoSvg,
     AvatarDropdown
+  },
+  data () {
+    return {
+      announcementList: []
+    }
   },
   computed: {
     ...mapGetters(['userInfo']),
@@ -123,9 +132,27 @@ export default {
     isLayout () {
       console.log(this.$route)
       return this.$route?.matched[0]?.name === 'patientAppointment'
+    },
+    announcementText ({ announcementList }) {
+      return announcementList
+        .filter((item) => !!item.content)
+        .map((item) => item.content)
+        .join(' ')
+    }
+  },
+  created () {
+    if (this.isLogin) {
+      this.getAnnouncement()
     }
   },
   methods: {
+    async getAnnouncement () {
+      const res = await getPublicAnnouncementList({
+        type: ANNOUNCEMENT_TYPE.SYSTEM,
+        isEnabled: 1
+      })
+      this.announcementList = res?.records || []
+    },
     goLogin () {
       this.$router.push('/user/login')
     },
