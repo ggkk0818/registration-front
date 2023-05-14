@@ -7,7 +7,7 @@
           <a-descriptions-item label="科室">{{ doctorData && doctorData.deptName }}</a-descriptions-item>
           <a-descriptions-item label="姓名">{{ doctorData && doctorData.realName }}</a-descriptions-item>
           <a-descriptions-item label="年龄">{{ doctorData && doctorData.age }}</a-descriptions-item>
-          <a-descriptions-item label="性别">{{ doctorData && doctorData.gender }}</a-descriptions-item>
+          <a-descriptions-item label="性别">{{ (doctorData && doctorData.gender) | genderFilter }}</a-descriptions-item>
           <a-descriptions-item label="描述"> {{ doctorData && doctorData.description }}</a-descriptions-item>
         </a-descriptions>
       </a-card>
@@ -55,7 +55,7 @@
           <a-descriptions-item label="科室">{{ doctorData && doctorData.deptName }}</a-descriptions-item>
           <a-descriptions-item label="姓名">{{ doctorData && doctorData.realName }}</a-descriptions-item>
           <a-descriptions-item label="年龄">{{ doctorData && doctorData.age }}</a-descriptions-item>
-          <a-descriptions-item label="性别">{{ doctorData && doctorData.gender }}</a-descriptions-item>
+          <a-descriptions-item label="性别">{{ (doctorData && doctorData.gender) | genderFilter }}</a-descriptions-item>
           <a-descriptions-item label="描述"> {{ doctorData && doctorData.description }}</a-descriptions-item>
         </a-descriptions>
         <a-descriptions title="预约信息">
@@ -101,6 +101,7 @@ import { prepare, deal } from '@/api/appointment'
 import { STable, Ellipsis } from '@/components'
 import MobileTable from './components/SourceMobileTable'
 import socketService, { STOMP_EVENT } from '@/utils/socketService'
+import { GENDER_TYPE_MAP } from '@/utils/consts'
 // 预约步骤
 const APPOINTMENT_STEP = {
   TIME: 1, // 选择时间
@@ -245,6 +246,11 @@ export default {
         console.log('更新号源', row.id, '数量', resourceCount)
         this.$set(row, 'resourceCount', resourceCount)
       }
+    }
+  },
+  filters: {
+    genderFilter (type) {
+      return GENDER_TYPE_MAP[type]?.text || ''
     }
   }
 }

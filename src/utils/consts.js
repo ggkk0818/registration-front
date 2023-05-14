@@ -50,3 +50,27 @@ export const APPOINTMENT_STATUS_MAP = APPOINTMENT_STATUS_LIST.reduce((map, item)
   map[item.value] = item
   return map
 }, {})
+// 性别
+export const GENDER_TYPE = {
+  OTHER: 0,
+  MALE: 1,
+  FEMALE: 2
+}
+export const GENDER_TYPE_LIST = [
+  {
+    text: '其他',
+    value: GENDER_TYPE.OTHER
+  },
+  {
+    text: '男',
+    value: GENDER_TYPE.MALE
+  },
+  {
+    text: '女',
+    value: GENDER_TYPE.FEMALE
+  }
+]
+export const GENDER_TYPE_MAP = GENDER_TYPE_LIST.reduce((map, item) => {
+  map[item.value] = item
+  return map
+}, {})
