@@ -13,15 +13,6 @@
     <template v-slot:extraContent>
       <div class="extra-content">
         <div class="stat-item">
-          <a-statistic title="部门数" :value="summaryData.departmentCount" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="医生数" :value="summaryData.doctorCount" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="患者数" :value="summaryData.patientCount" />
-        </div>
-        <div class="stat-item">
           <a-statistic title="今日预约" :value="summaryData.appointmentCount" />
         </div>
       </div>
@@ -201,7 +192,7 @@ export default {
 <style lang="less" scoped>
 @import './Workplace.less';
 
-.project-list {
+.project-list::v-deep {
   .card-title {
     display: flex;
     align-items: center;

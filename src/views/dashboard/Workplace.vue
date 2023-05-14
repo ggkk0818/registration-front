@@ -202,7 +202,7 @@ export default {
 <style lang="less" scoped>
 @import './Workplace.less';
 
-.project-list {
+.project-list::v-deep {
   .card-title {
     display: flex;
     align-items: center;
