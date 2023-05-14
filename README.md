@@ -1,104 +1,103 @@
-# vue3-antd-admin
+English | [简体中文](./README.zh-CN.md)
 
-> 基于 vue-cli5.x 重构整个前后端项目，完善后端权限控制细粒度，封装更多场景化组件...正在完善中
+<h1 align="center">Ant Design Vue Pro</h1>
+<div align="center">
+An out-of-box UI solution for enterprise applications as a Vue boilerplate. based on  <a href="https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/" target="_blank">Ant Design of Vue</a>
+</div>
 
-基于 vue-cli5.x / vite2.x + vue3.x + antd-design-vue3.x + typescript4.x 的后台管理系统模板
+<div align="center">
 
-- 账号：rootadmin，密码：123456
-- 在线预览（ [gitee](http://buqiyuan.gitee.io/vue3-antd-admin/) / [vercel](https://vue3-antd-admin.vercel.app/) ）
-- [swagger 文档](https://nest-api.buqiyuan.site/swagger-api/)
-- [后台地址](https://github.com/buqiyuan/nest-admin)
-- [react 版 coding](https://github.com/buqiyuan/react-antd-admin)
-- [vite 版](https://github.com/buqiyuan/vite-vue3-admin)
-- [gitee 地址](https://gitee.com/buqiyuan/vue3-antd-admin)
-- 根据 JSON 生成 typescript 的工具：[http://json2ts.com/](http://json2ts.com/)
+[![License](https://img.shields.io/npm/l/package.json.svg?style=flat)](https://github.com/vueComponent/ant-design-vue-pro/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/release/vueComponent/ant-design-vue-pro.svg?style=flat)](https://github.com/vueComponent/ant-design-vue-pro/releases/latest)
+[![Support Vue Version](https://img.shields.io/badge/Support-Vue2-green?style=flat)](https://github.com/vueComponent/ant-design-vue-pro/releases/latest)
+[![Travis branch](https://travis-ci.org/vueComponent/ant-design-vue-pro.svg?branch=master)](https://travis-ci.org/vueComponent/ant-design-vue-pro)
 
-部分设计参考了 [vue-vben-admin](https://github.com/vbenjs/vue-vben-admin)
+</div>
 
-## 安装使用
+- Preview: https://preview.pro.antdv.com
+- Home Page: https://pro.antdv.com
+- Documentation: https://pro.antdv.com/docs/getting-started
+- ChangeLog: https://pro.antdv.com/docs/changelog
+- FAQ: https://pro.antdv.com/docs/faq
+- Vue3 ProLayout: https://github.com/vueComponent/pro-layout
 
-- 获取项目代码
+Overview
+----
 
+![dashboard](https://static-2.loacg.com/open/static/github/SP1.png)
+
+### Env and dependencies
+
+- node
+- yarn
+- webpack
+- eslint
+- @vue/cli
+- [ant-design-vue@1.x](https://github.com/vueComponent/ant-design-vue) - Ant Design Of Vue 
+- [vue-cropper](https://github.com/xyxiao001/vue-cropper) - Picture edit
+- [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - AntV G2
+- [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - Antv/G2 of Vue
+
+> Note:  [Yarn](https://yarnpkg.com/) package management is recommended, the exact same version loaded with the demo site of this project (yarn.lock) . but you can also use npm
+
+
+### Project setup
+
+- Clone repo
 ```bash
-git clone https://github.com/buqiyuan/vue3-antd-admin
+git clone https://github.com/vueComponent/ant-design-vue-pro.git
+cd ant-design-vue-pro
 ```
 
-- 安装依赖
-
-```bash
-cd vue3-antd-admin
-
+- Install dependencies
+```
 yarn install
-
 ```
 
-- 运行
-
-```bash
-yarn serve
+- Compiles and hot-reloads for development
+```
+yarn run serve
 ```
 
-- 打包
-
-```bash
-yarn build
+- Compiles and minifies for production
+```
+yarn run build
 ```
 
-## vscode 配置
+- Lints and fixes files
+```
+yarn run lint
+```
 
-安装项目根目录.vscode 推荐的插件，再安装 Volar，并禁用 Vetur，重启 vscode 即可，更多详细的 vue3 IDE 配置点[这里](https://cn.vuejs.org/guide/typescript/overview.html#volar-takeover-mode)。
 
-> 使用了 Vue3.x 全家桶、ant-design-vue3.x 和 typescript4.x，实践 vue3.x 的新特性以及玩法，不得不说 vue3.x 的 Composition API 相比于 vue2.x 的 Options API 灵活很多，让我们可以灵活地组合组件逻辑，我们可以很轻松的使用 hooks 的形式去代替以前 mixins 等的写法。更多 hooks 可以参考[vueuse](https://vueuse.org/functions.html)
+### Other
 
-## 项目简要说明
+- **IMPORTANT : Issue feedback !! when opening Issue read [Issue / PR Contributing](https://github.com/vueComponent/ant-design-vue-pro/issues/90)**
 
-`rootadmin` 默认开放多点登录，其他新建的账号默认都是单点登录。建议自己拉后端代码到本地跑，避免多人同时操作时产生冲突和误解。
+- [Vue-cli3](https://cli.vuejs.org/guide/) used by the project.
 
-### todolist
+- Disable Eslint (not recommended): remove `eslintConfig`  field in `package.json`  and `vue.config.js` field `lintOnSave: false`
 
-- [x] 动态表格(完善中)
-- [x] 动态表单(完善中)
-- [ ] 电商 SKU 功能演示
-- [ ] 纯前端导出 PDF 自动分页
-- [ ] 其他...
+- Load on Demand `/src/main.js` L14, in `import './core/lazy_use'`, `import './core/use''`. more [load-on-demand.md](./docs/load-on-demand.md)
 
-## 更新日志
+- Customize Theme:  [Custom Theme Config (@kokoroli)](https://github.com/kokoroli/antd-awesome/blob/master/docs/Ant_Design_%E6%A0%B7%E5%BC%8F%E8%A6%86%E7%9B%96.md)
 
-[CHANGELOG](./CHANGELOG.md)
+- I18n: [locales (@musnow)](./src/locales/index.js)
 
-## Git 贡献提交规范
+- Production env `mock` is disabled. use `src/mock/index.js`
 
-- 参考 [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) 规范 ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
+- pls use `release` version
 
-  - `feat` 增加新功能
-  - `fix` 修复问题/BUG
-  - `style` 代码风格相关无影响运行结果的
-  - `perf` 优化/性能提升
-  - `refactor` 重构
-  - `revert` 撤销修改
-  - `test` 测试相关
-  - `docs` 文档/注释
-  - `chore` 依赖更新/脚手架配置修改等
-  - `workflow` 工作流改进
-  - `ci` 持续集成
-  - `types` 类型定义文件更改
-  - `wip` 开发中
+## Browsers support
 
-### QQ 交流群（2022-3-8）
+Modern browsers and IE10.
 
-[![加入QQ群](https://img.shields.io/badge/570108996-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=ID-KcAOdPUPWVgAnsPLF3gRdHLc8GURO&jump_from=webapi)
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
+| --- | --- | --- | --- | --- |
+| IE10, Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
-<div><img src="https://cdn.jsdelivr.net/gh/buqiyuan/MyImageHosting/imgs/vue3-antdv-admin/qq_group.jpg" height="280" /></div>
 
-## 赞赏
+## Contributors
 
-如果你觉得这个项目对你有帮助，你可以帮作者买一杯咖啡表示支持!
-
-| 微信 | 支付宝 |
-| :-: | :-: |
-| <img src="https://cdn.jsdelivr.net/gh/buqiyuan/MyImageHosting/imgs/vue3-antdv-admin/weixin.jpg" height="220" /> | <img src="https://cdn.jsdelivr.net/gh/buqiyuan/MyImageHosting/imgs/vue3-antdv-admin/zhifubao.jpg" height="220" /> |
-
-## 感谢 JetBrains 免费的开源授权
-
-<a href="https://www.jetbrains.com/?from=Mybatis-PageHelper" target="_blank">
-<img src="https://user-images.githubusercontent.com/1787798/69898077-4f4e3d00-138f-11ea-81f9-96fb7c49da89.png" height="200"/></a>
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/vueComponent/ant-design-vue-pro/graphs/contributors"><img src="https://opencollective.com/ant-design-pro-vue/contributors.svg?width=890&button=false" /></a>

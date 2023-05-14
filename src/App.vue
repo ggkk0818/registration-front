@@ -1,29 +1,28 @@
 <template>
-  <ConfigProvider :locale="getAntdLocale">
-    <router-view #="{ Component }">
-      <component :is="Component" />
-    </router-view>
-    <LockScreen />
-  </ConfigProvider>
+  <a-config-provider :locale="locale">
+    <div id="app">
+      <router-view/>
+    </div>
+  </a-config-provider>
 </template>
 
-<script setup lang="ts">
-  import { watchEffect } from 'vue';
-  import { useRoute } from 'vue-router';
-  import { ConfigProvider } from 'ant-design-vue';
-  import { transformI18n } from './hooks/useI18n';
-  import { LockScreen } from '@/components/basic/lockscreen';
-  import { useLocale } from '@/locales/useLocale';
+<script>
+import { domTitle, setDocumentTitle } from '@/utils/domUtil'
+import { i18nRender } from '@/locales'
 
-  const route = useRoute();
-  const { getAntdLocale } = useLocale();
-
-  watchEffect(() => {
-    if (route.meta?.title) {
-      // 翻译网页标题
-      document.title = transformI18n(route.meta.title);
+export default {
+  data () {
+    return {
     }
-  });
-</script>
+  },
+  computed: {
+    locale () {
+      // 只是为了切换语言时，更新标题
+      const { title } = this.$route.meta
+      title && (setDocumentTitle(`${i18nRender(title)} - ${domTitle}`))
 
-<style lang="less"></style>
+      return this.$i18n.getLocaleMessage(this.$store.getters.lang).antLocale
+    }
+  }
+}
+</script>
